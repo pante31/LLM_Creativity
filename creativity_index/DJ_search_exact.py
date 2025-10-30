@@ -14,7 +14,7 @@ from transformers import AutoTokenizer
 
 md = MosesDetokenizer(lang='en')
 API_URL = 'https://api.infini-gram.io/'
-HF_TOKEN = "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"
+HF_TOKEN = "hf_SULLXJJXoqqHXo"+"LBqyjXTdOkwjybapbPGF"
 tokenizer = AutoTokenizer.from_pretrained("meta-llama/Llama-2-7b-hf", token=HF_TOKEN,
                                           add_bos_token=False, add_eos_token=False)
 

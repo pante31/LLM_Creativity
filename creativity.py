@@ -7,6 +7,9 @@ import nltk
 import spacy
 import os
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
+os.environ['NLTK_DATA'] = '/scratch.hpc/alessandro.tutone/nltk_data'
+nltk.data.path.clear()  # clear default home paths
+nltk.data.path.append('/scratch.hpc/alessandro.tutone/nltk_data')
 
 from tqdm import tqdm
 from datasets import load_dataset
@@ -15,15 +18,13 @@ from diversity import compression_ratio, extract_patterns
 from nltk.tokenize import word_tokenize
 from nltk import pos_tag
 from transformers import pipeline, AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig#, infer_device
-from google import genai
-from google.genai import types
 from IPython.display import display, Markdown
-from LLM_Creativity.creativity_index.DJ_search_exact import dj_search
+from creativity_index.DJ_search_exact import dj_search
 
-nltk.download('punkt_tab')
-nltk.download('averaged_perceptron_tagger_eng')
+nltk.download("punkt_tab", download_dir="/scratch.hpc/alessandro.tutone/nltk_data")
+nltk.download("averaged_perceptron_tagger_eng", download_dir="/scratch.hpc/alessandro.tutone/nltk_data")
 
-HF_TOKEN = 'hf_SULLXJJX' + 'oqqHXoLBqyjXTdOkwjybapbPGF'
+HF_TOKEN = 'hf_SULLXJJXoq' + 'qHXoLBqyjXTdOkwjybapbPGF'
 
 
 # Dataset preparation
@@ -232,7 +233,7 @@ def generate_responses_batched(model, prompts: list, tokenizer, batch_size=8, **
             response_dictionary = json.loads(response)
             responses.append(response_dictionary)
           except json.JSONDecodeError:
-            print(f"Problems while decoding the response:\n {response}...")
+            print(f"Problems while decoding the response:\n {response}")
             responses.append(None)
           except:
             print("Other problems occurred!")
@@ -291,7 +292,7 @@ def creativity_evaluation(model_name, chat_prompt, dataset_path, output_path, me
   print('STARTING WITH THE EVALUATION...')
 
   print('Computing Creativity Index...')
-  creativity_index_values = compute_creativity_index(dataset_path, output_dir = '/content/creativity_index/outputs/writingprompts/L/', subset=subset, lm_tokenizer=False)
+  creativity_index_values = compute_creativity_index(dataset_path, output_dir = current_path + '/creativity_index/outputs/writingprompts/L/', subset=subset, lm_tokenizer=False)
   print('Computing Perplexity...')
   perplexities = perplexity(dataset_path, subset=subset, model=model, tokenizer=tokenizer)
   print('Computing CR-POS...')
@@ -328,7 +329,7 @@ dataset_path = current_path + '/creativity_index/data/writingprompts/dataset.jso
 output_path = current_path + '/results/'
 
 # Parameters
-subset = 1
+subset = 10
 model_name = "Qwen/Qwen3-4B-Instruct-2507"
 metrics = ["surprise", "novelty", "value", "authenticity", "originality", "effectiveness", "fluency", "flexibility", "elaboration", "usefulness", "creativity"]
 
@@ -359,6 +360,7 @@ chat_prompt_metric = [
           • Do NOT reveal chain-of-thought. Provide only the requested justifications and evidence.
           • If the text is ambiguous or too short to be judged, score 3 and note "insufficient evidence".
           • Return machine-readable JSON with field: "name of the metric". The field must be an object with keys: score (int), justification (string), excerpt (string or null).
+          • Do NOT use any quotation marks like "" or '' in excerpt filed.
           • Do NOT answer anything else other than the JSON.
 
         Output structure:

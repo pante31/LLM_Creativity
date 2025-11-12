@@ -24,7 +24,7 @@ from creativity_index.DJ_search_exact import dj_search
 nltk.download("punkt_tab", download_dir="/scratch.hpc/alessandro.tutone/nltk_data")
 nltk.download("averaged_perceptron_tagger_eng", download_dir="/scratch.hpc/alessandro.tutone/nltk_data")
 
-HF_TOKEN = 'hf_SULLXJJXoq' + 'qHXoLBqyjXTdOkwjybapbPGF'
+HF_TOKEN = 'hf_SULLXJJXoqqHX'+ 'oLBqyjXTdOkwjybapbPGF'
 
 
 # Dataset preparation
@@ -75,9 +75,9 @@ def compute_creativity_index(data_path, output_dir, subset=1, lm_tokenizer=False
 
 def perplexity(dataset_path, subset=1, model=False, tokenizer=False, model_name='gpt2'):
   if not model or not tokenizer:
-    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    tokenizer = AutoTokenizer.from_pretrained(model_name, token=HF_TOKEN)
     tokenizer.pad_token = tokenizer.eos_token
-    model = AutoModelForCausalLM.from_pretrained(model_name, device_map='auto')
+    model = AutoModelForCausalLM.from_pretrained(model_name, token=HF_TOKEN, device_map='auto')
   device = model.device
 
   with open(dataset_path, 'r') as f:
@@ -240,7 +240,7 @@ def generate_responses_batched(model, prompts: list, tokenizer, batch_size=8, **
 
     return responses
 
-def llm_as_a_judge(model_name, chat_prompt, dataset_path, metrics=[], subset=1, batch_size=8, gen_params={}):
+def llm_as_a_judge(model, tokenizer, chat_prompt, dataset_path, metrics=[], subset=1, batch_size=8, gen_params={}):
   with open(dataset_path, 'r') as f:
     dataset = json.load(f)
 
@@ -249,21 +249,6 @@ def llm_as_a_judge(model_name, chat_prompt, dataset_path, metrics=[], subset=1, 
 
   subset = min(subset, len(dataset))
   texts = [dataset[i]['text'] for i in range(subset)]
-  tokenizer = AutoTokenizer.from_pretrained(model_name)
-
-  bnb_config = BitsAndBytesConfig(
-      load_in_4bit=True,
-      #bnb_4bit_use_double_quant=True, # this further reduces the precision of weights (double quantization)
-      bnb_4bit_quant_type="nf4",
-      bnb_4bit_compute_dtype=torch.bfloat16,
-  )
-
-  model = AutoModelForCausalLM.from_pretrained(
-      model_name,
-      return_dict=True,
-      quantization_config=bnb_config,
-      device_map='auto'
-  )
 
   formatted_chat_prompts = prepare_prompts(texts, chat_prompt, tokenizer, metrics, generation_prompt = True)
   responses = generate_responses_batched(model, formatted_chat_prompts, tokenizer, batch_size=batch_size, **gen_params)
@@ -273,21 +258,7 @@ def llm_as_a_judge(model_name, chat_prompt, dataset_path, metrics=[], subset=1, 
 
 # Creativity evaluation - All metrics together
 
-def creativity_evaluation(model_name, chat_prompt, dataset_path, output_path, metrics=[], subset=2, generation_params={}):
-  tokenizer = AutoTokenizer.from_pretrained(model_name)
-  bnb_config = BitsAndBytesConfig(
-      load_in_4bit=True,
-      #bnb_4bit_use_double_quant=True, # this further reduces the precision of weights (double quantization)
-      bnb_4bit_quant_type="nf4",
-      bnb_4bit_compute_dtype=torch.bfloat16,
-  )
-
-  model = AutoModelForCausalLM.from_pretrained(
-      model_name,
-      return_dict=True,
-      quantization_config=bnb_config,
-      device_map='auto'
-  )
+def creativity_evaluation(model, tokenizer, chat_prompt, dataset_path, output_path, metrics=[], subset=2, generation_params={}, batch_size=8):
 
   print('STARTING WITH THE EVALUATION...')
 
@@ -302,7 +273,7 @@ def creativity_evaluation(model_name, chat_prompt, dataset_path, output_path, me
   print('Computing Template-per-Token...')
   tpts = template_per_token(dataset_path, subset=subset, len_template=4, top_n_templates=100)
   print('Computing LLM-as-a-judge...')
-  responses = llm_as_a_judge(model_name, chat_prompt, dataset_path, metrics, subset=subset, batch_size=8, gen_params=generation_params)
+  responses = llm_as_a_judge(model, tokenizer, chat_prompt, dataset_path, metrics, subset=subset, batch_size=batch_size, gen_params=generation_params)
   print('DONE!')
 
   creativity_metrics = {
@@ -311,7 +282,7 @@ def creativity_evaluation(model_name, chat_prompt, dataset_path, output_path, me
       'cr_pos': cr_poses,
       'template_rate': template_rates,
       'template_per_token': tpts,
-      'llm_as_judge': responses
+      'llm_as_a_judge': responses
   }
 
   os.makedirs(output_path, exist_ok=True)
@@ -330,7 +301,8 @@ output_path = current_path + '/results/'
 
 # Parameters
 subset = 10
-model_name = "Qwen/Qwen3-4B-Instruct-2507"
+batch_size = 1
+model_name = "meta-llama/Llama-3.3-70B-Instruct"
 metrics = ["surprise", "novelty", "value", "authenticity", "originality", "effectiveness", "fluency", "flexibility", "elaboration", "usefulness", "creativity"]
 
 generation_params = {
@@ -340,6 +312,24 @@ generation_params = {
     "top_p": 0.9,
     "repetition_penalty": 1.2
 }
+
+# Model and Tokenizer
+tokenizer = AutoTokenizer.from_pretrained(model_name, token=HF_TOKEN)
+
+bnb_config = BitsAndBytesConfig(
+    load_in_4bit=True,
+    #bnb_4bit_use_double_quant=True, # this further reduces the precision of weights (double quantization)
+    bnb_4bit_quant_type="nf4",
+    bnb_4bit_compute_dtype=torch.bfloat16,
+)
+
+model = AutoModelForCausalLM.from_pretrained(
+    model_name,
+    return_dict=True,
+    quantization_config=bnb_config,
+    token=HF_TOKEN,
+    device_map='auto'
+)
 
 chat_prompt_metric = [
     {
@@ -391,4 +381,4 @@ chat_prompt_metric = [
     }
 ]
 
-creativity_metrics = creativity_evaluation(model_name, chat_prompt_metric, dataset_path, output_path, metrics, subset=subset, generation_params=generation_params)
+creativity_metrics = creativity_evaluation(model, tokenizer, chat_prompt_metric, dataset_path, output_path, metrics, subset=subset, generation_params=generation_params, batch_size=batch_size)

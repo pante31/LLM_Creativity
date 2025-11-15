@@ -24,7 +24,7 @@ from creativity_index.DJ_search_exact import dj_search
 nltk.download("punkt_tab", download_dir="/scratch.hpc/alessandro.tutone/nltk_data")
 nltk.download("averaged_perceptron_tagger_eng", download_dir="/scratch.hpc/alessandro.tutone/nltk_data")
 
-HF_TOKEN = 'hf_SULLXJJXoqqHX'+ 'oLBqyjXTdOkwjybapbPGF'
+HF_TOKEN = 'hf_SULLXJJXoqqHXo' +'LBqyjXTdOkwjybapbPGF'
 
 
 # Dataset preparation
@@ -213,6 +213,17 @@ def prepare_prompts(texts, prompt_template, tokenizer, metrics=[], generation_pr
 
   return texts_formatted
 
+def fix_json_brackets(s):
+    s = s.strip()
+    open_braces = s.count('{')
+    close_braces = s.count('}')
+    
+    while close_braces > open_braces and s.endswith('}'):
+        s = s[:-1]
+        close_braces -= 1
+    
+    return s
+
 def generate_responses_batched(model, prompts: list, tokenizer, batch_size=8, **gen_param):
     responses = []
     device = model.device
@@ -230,6 +241,7 @@ def generate_responses_batched(model, prompts: list, tokenizer, batch_size=8, **
 
         for response in batch_responses:
           try:
+            response = fix_json_brackets(response)
             response_dictionary = json.loads(response)
             responses.append(response_dictionary)
           except json.JSONDecodeError:
@@ -334,32 +346,41 @@ model = AutoModelForCausalLM.from_pretrained(
 chat_prompt_metric = [
     {
         'role': 'system',
-        'content': 'You are an objective text evaluator. Your task is to assess a given text objectively according to a specific metric.'
+        'content': (
+          'You are an objective text evaluator. Your task is to assess a given text objectively according to a specific metric. '
+          'Your only output must be a single, syntactically correct JSON object. '
+          'Never include explanations, reasoning, or extra text outside the JSON. '
+
+        )
     },
     {
         'role': 'user',
         'content': """Given the following text, you need to evaluate it for the specified metric: {metric}.
         
+        ### Task
         Taking into account the definition of the specified metric, produce:
             - score: integer 1–5 (1 = lowest, 5 = highest)
             - justification: ≤30 words explaining the rating
             - excerpt: ≤20 words from the text supporting the evaluation (or null if not applicable)
 
+        ### Rules
         Strict rules:
           • Evaluate the aspect objectively.
           • Do NOT reveal chain-of-thought. Provide only the requested justifications and evidence.
           • If the text is ambiguous or too short to be judged, score 3 and note "insufficient evidence".
-          • Return machine-readable JSON with field: "name of the metric". The field must be an object with keys: score (int), justification (string), excerpt (string or null).
-          • Do NOT use any quotation marks like "" or '' in excerpt filed.
+          • Return **only valid JSON** with field: "name of the metric". The field must be an object with keys: score (int), justification (string), excerpt (string or null).
           • Do NOT answer anything else other than the JSON.
+          • Do NOT include backticks, markdown, explanations, or anything outside the JSON.
+          • If unsure about JSON syntax, default to minimal valid JSON with null excerpt.
+          • Before answering, double check the brackets and the correctenss of the JSON
 
         Output structure:
             {{
-            "{metric}":{{
-            "score": <int>, 
-            "justification": "<string>",
-            "excerpt": "<string or null>"
-            }}
+              "{metric}":{{
+              "score": <int>, 
+              "justification": "<string>",
+              "excerpt": "<string or null>"
+              }}
             }}
 
         SCALE ANCHORS (use these as guidance):
@@ -375,6 +396,8 @@ chat_prompt_metric = [
 
         OUTPUT:
         - JSON object (as described).
+        - The JSON must start with '_curly bracket_' and end with exactly one '_curly bracket_'.
+        - Ensure the correctness of the JSON. Double check that the brackets are correct.
 
         End.
         """

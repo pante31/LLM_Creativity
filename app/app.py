@@ -2,12 +2,15 @@ import streamlit as st
 import json
 import random
 import pandas as pd
+import os
 from datetime import datetime
 
 # 1. Caricamento dei testi (cache per non ricaricare ogni volta)
 @st.cache_data
 def load_data():
-    with open('./dataset_small.json', 'r') as f:
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    json_path = os.path.join(base_dir, "dataset_small.json")
+    with open(json_path, 'r') as f:
         data = json.load(f)
     return data
 

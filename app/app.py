@@ -7,7 +7,7 @@ from datetime import datetime
 # 1. Caricamento dei testi (cache per non ricaricare ogni volta)
 @st.cache_data
 def load_data():
-    with open('dataset_small.json', 'r') as f:
+    with open('./dataset_small.json', 'r') as f:
         data = json.load(f)
     return data
 

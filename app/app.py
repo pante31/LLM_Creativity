@@ -9,7 +9,6 @@ import pandas as pd
 
 from datetime import datetime
 from oauth2client.service_account import ServiceAccountCredentials
-import streamlit.components.v1 as components
 
 # Se l'utente ha premuto "Esci", mostriamo i saluti e blocchiamo tutto QUI.
 if 'finito' in st.session_state and st.session_state['finito']:
@@ -33,15 +32,6 @@ def get_google_sheet():
     # QUI devi mettere il nome esatto del tuo foglio Google
     sheet = client.open("texts_evaluation_sheet").sheet1 
     return sheet
-
-# --- FUNZIONE PER SCROLLARE IN CIMA ---
-def scroll_to_top():
-    js = """
-    <script>
-        window.parent.scrollTo({ top: 0, behavior: 'smooth' });
-    </script>
-    """
-    components.html(js, height=0)
 
 # --- CARICAMENTO DATI ---
 @st.cache_data
@@ -84,86 +74,69 @@ if st.session_state['user_info'] is None:
 
 # --- PARTE 2: VALUTAZIONE TESTI ---
 else:
-    st.title("Valutazione")
-    
-    # Se non c'è un testo selezionato, ne prendiamo uno a caso
-    if st.session_state['current_text'] is None:
-        st.session_state['current_text'] = random.choice(data_texts)
-    
-    texto = st.session_state['current_text']
-    
-    # Mostriamo il testo
-    st.info(f"📄 **Testo ID: {texto['id']}**")
-    st.markdown(f"### {texto['text']}")
-    st.markdown("---")
-    
-    st.write("Valuta il testo sopra secondo i seguenti criteri (1 = Minimo, 5 = Massimo):")
-    
-    # --- FORM DI VALUTAZIONE ---
-    with st.form("evaluation"):
-        m1 = st.slider("Quanto è CHIARO questo testo?", 1, 5, 3)
-        m2 = st.slider("Quanto è PERSUASIVO?", 1, 5, 3)
-        m3 = st.slider("Correttezza GRAMMATICALE?", 1, 5, 3)
+    # 1. Creiamo un contenitore vuoto che conterrà TUTTA l'interfaccia di valutazione
+    placeholder_valutazione = st.empty()
+
+    # 2. Costruiamo l'interfaccia DENTRO questo contenitore
+    with placeholder_valutazione.container():
+        st.title("Valutazione")
         
-        # Unico bottone permesso dentro il form
-        submit_eval = st.form_submit_button("Invia Valutazione")
+        # Logica di pesca del testo
+        if st.session_state['current_text'] is None:
+            st.session_state['current_text'] = random.choice(data_texts)
         
-    # --- LOGICA POST INVIO (Fuori dal form) ---
+        texto = st.session_state['current_text']
+        
+        # Mostriamo il testo
+        st.info(f"📄 **Testo ID: {texto['id']}**")
+        st.markdown(f"### {texto['text']}")
+        st.markdown("---")
+        st.write("Valuta il testo sopra secondo i seguenti criteri (1 = Minimo, 5 = Massimo):")
+        
+        # Form
+        with st.form("evaluation"):
+            m1 = st.slider("Quanto è CHIARO questo testo?", 1, 5, 3)
+            m2 = st.slider("Quanto è PERSUASIVO?", 1, 5, 3)
+            m3 = st.slider("Correttezza GRAMMATICALE?", 1, 5, 3)
+            submit_eval = st.form_submit_button("Invia Valutazione")
+
+    # --- LOGICA POST INVIO (Fuori dal contenitore visivo) ---
     if submit_eval:
-        # 1. Prepariamo la riga
+        # 3. TRUCCO MAGICO: Svuotiamo immediatamente l'interfaccia!
+        # La pagina ora è vuota, quindi il browser torna in cima per forza.
+        placeholder_valutazione.empty()
+        
+        # Salvataggio dati
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         user = st.session_state['user_info']
         
         row_to_append = [
-            timestamp,
-            user['session_id'],
-            user['age'],
-            user['gender'],
-            user['education'],
-            texto['id'],
-            texto['text'],
-            m1,
-            m2,
-            m3
+            timestamp, user['session_id'], user['age'], user['gender'], 
+            user['education'], texto['id'], texto['text'], m1, m2, m3
         ]
         
-        # Variabile per tracciare se è andato tutto bene
         successo = False
-        
-        # 2. Inviamo a Google Sheets
         try:
             sheet = get_google_sheet()
             sheet.append_row(row_to_append)
-            successo = True # Se arriva qui, ha funzionato
-            
+            successo = True
         except Exception as e:
-            # TRUCCO: Se l'errore contiene "200", in realtà è un successo!
-            if "200" in str(e):
+            if "200" in str(e): # Gestione falso positivo gspread
                 successo = True
             else:
                 st.error(f"Errore tecnico: {e}")
 
-        # 3. SE È ANDATO TUTTO BENE
         if successo:
+            # Ora mostriamo il messaggio di successo (apparirà in alto perché il resto è sparito)
             st.success("✅ Valutazione salvata! Caricamento prossimo testo...")
             
-            # Reset del testo
             st.session_state['current_text'] = None
-            
-            # Riporta l'utent in cima alla pagina
-            scroll_to_top()
-            
-            # Pausa per leggere il messaggio
-            time.sleep(1.5) 
-            
-            # Ricarica la pagina
+            time.sleep(1.5)
             st.rerun()
-    
-    # Tasto per uscire
-    st.markdown("---")
-    if st.button("Termina Sessione (Esci)"):
-        st.session_state.clear()
-        st.success("Grazie per il tuo contributo!")
-        time.sleep(1)
-        st.session_state['finito'] = True
-        st.rerun() # Ricarica la pagina dall'inizio
+
+    # Tasto per uscire (lo mettiamo fuori dal placeholder così sparisce o resta a seconda della logica)
+    if not submit_eval: # Lo mostriamo solo se non stiamo salvando
+        st.markdown("---")
+        if st.button("Termina Sessione (Esci)"):
+            st.session_state['finito'] = True
+            st.rerun()

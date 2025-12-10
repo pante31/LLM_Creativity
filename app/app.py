@@ -86,40 +86,40 @@ else:
         
         submit_eval = st.form_submit_button("Invia Valutazione")
         
-        if submit_eval:
-            # 1. Prepariamo la riga da salvare
-            timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            user = st.session_state['user_info']
-            
-            row_to_append = [
-                timestamp,
-                user['session_id'],
-                user['age'],
-                user['gender'],
-                user['education'],
-                texto['id'],
-                texto['text'], # Salviamo anche il testo per comodità di lettura nel foglio
-                m1,
-                m2,
-                m3
-            ]
-            
-            # 2. Inviamo a Google Sheets
-            try:
-                sheet = get_google_sheet()
-                sheet.append_row(row_to_append)
-                st.success("✅ Valutazione salvata con successo!")
-            except Exception as e:
-                st.error(f"Errore nel salvataggio: {e}")
-            
-            # 3. Reset del testo per il prossimo giro
-            st.session_state['current_text'] = None
-            
-            # Opzioni per continuare
-            col1, col2 = st.columns(2)
-            with col1:
-                st.write("Vuoi valutare un altro testo?")
-                st.button("Sì, continua", on_click=st.rerun) # Ricarica e pesca nuovo testo
-            with col2:
-                if st.button("No, ho finito"):
-                    st.stop() # Ferma l'app
+    if submit_eval:
+        # 1. Prepariamo la riga da salvare
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        user = st.session_state['user_info']
+        
+        row_to_append = [
+            timestamp,
+            user['session_id'],
+            user['age'],
+            user['gender'],
+            user['education'],
+            texto['id'],
+            texto['text'], # Salviamo anche il testo per comodità di lettura nel foglio
+            m1,
+            m2,
+            m3
+        ]
+        
+        # 2. Inviamo a Google Sheets
+        try:
+            sheet = get_google_sheet()
+            sheet.append_row(row_to_append)
+            st.success("✅ Valutazione salvata con successo!")
+        except Exception as e:
+            st.error(f"Errore nel salvataggio: {e}")
+        
+        # 3. Reset del testo per il prossimo giro
+        st.session_state['current_text'] = None
+        
+        # Opzioni per continuare
+        col1, col2 = st.columns(2)
+        with col1:
+            st.write("Vuoi valutare un altro testo?")
+            st.button("Sì, continua", on_click=st.rerun) # Ricarica e pesca nuovo testo
+        with col2:
+            if st.button("No, ho finito"):
+                st.stop() # Ferma l'app

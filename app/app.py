@@ -73,7 +73,7 @@ else:
     texto = st.session_state['current_text']
     
     # Mostriamo il testo in un box evidente
-    st.info(f"📄 **Testo ID {texto['id']}**")
+    st.info(f"📄 **Testo ID: {texto['id']}**")
     st.markdown(f"### {texto['text']}")
     st.markdown("---")
     

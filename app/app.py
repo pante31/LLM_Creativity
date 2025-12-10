@@ -92,7 +92,7 @@ else:
         
     # --- LOGICA POST INVIO (Fuori dal form) ---
     if submit_eval:
-        # 1. Prepariamo la riga da salvare
+        # 1. Prepariamo la riga
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         user = st.session_state['user_info']
         
@@ -109,30 +109,39 @@ else:
             m3
         ]
         
+        # Variabile per tracciare se è andato tutto bene
+        successo = False
+        
         # 2. Inviamo a Google Sheets
         try:
             sheet = get_google_sheet()
             sheet.append_row(row_to_append)
-            
-            # FEEDBACK POSITIVO
-            st.success("✅ Valutazione salvata! Caricamento prossimo testo...")
-            
-            # 3. RESET E RIAVVIO AUTOMATICO
-            # Resettiamo il testo così al prossimo giro ne pesca uno nuovo
-            st.session_state['current_text'] = None
-            
-            # Piccola pausa per far leggere all'utente che è andato tutto bene
-            time.sleep(1.5) 
-            
-            # Ricarica la pagina automaticamente
-            st.rerun()
+            successo = True # Se arriva qui, ha funzionato
             
         except Exception as e:
-            st.error(f"Errore nel salvataggio: {e}")
+            # TRUCCO: Se l'errore contiene "200", in realtà è un successo!
+            if "200" in str(e):
+                successo = True
+            else:
+                st.error(f"Errore tecnico: {e}")
 
-    # Tasto per uscire (sempre visibile fuori dal form, opzionale)
+        # 3. SE È ANDATO TUTTO BENE (O SEMBRAVA UN ERRORE 200)
+        if successo:
+            st.success("✅ Valutazione salvata! Caricamento prossimo testo...")
+            
+            # Reset del testo
+            st.session_state['current_text'] = None
+            
+            # Pausa per leggere il messaggio
+            time.sleep(1.5) 
+            
+            # Ricarica la pagina (FUORI dal try/except per evitare errori)
+            st.rerun()
+
+    # Tasto per uscire
     st.markdown("---")
     if st.button("Termina Sessione (Esci)"):
-        st.session_state.clear() # Pulisce la memoria
+        st.session_state.clear()
         st.success("Grazie per il tuo contributo!")
+        time.sleep(1)
         st.stop()

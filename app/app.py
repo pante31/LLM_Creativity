@@ -22,7 +22,7 @@ def get_google_sheet():
     client = gspread.authorize(creds)
     
     # QUI devi mettere il nome esatto del tuo foglio Google
-    sheet = client.open("Valutazione_Testi_Data").sheet1 
+    sheet = client.open("texts_evaluation_sheet").sheet1 
     return sheet
 
 # --- CARICAMENTO DATI ---

@@ -1,6 +1,7 @@
 import streamlit as st
 import json
 import random
+import os
 import pandas as pd
 from datetime import datetime
 import gspread
@@ -25,8 +26,9 @@ def get_google_sheet():
 # --- CARICAMENTO DATI ---
 @st.cache_data
 def load_texts():
-    # Assicurati di avere il file testi.json nella stessa cartella
-    with open('testi.json', 'r', encoding='utf-8') as f:
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    json_path = os.path.join(base_dir, "dataset_small.json")
+    with open(json_path, 'r') as f:
         data = json.load(f)
     return data
 

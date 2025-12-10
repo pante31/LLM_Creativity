@@ -1,10 +1,12 @@
-import streamlit as st
 import json
 import random
 import os
-import pandas as pd
-from datetime import datetime
+import time
 import gspread
+import streamlit as st
+import pandas as pd
+
+from datetime import datetime
 from oauth2client.service_account import ServiceAccountCredentials
 
 # --- CONFIGURAZIONE GOOGLE SHEETS ---
@@ -72,20 +74,23 @@ else:
     
     texto = st.session_state['current_text']
     
-    # Mostriamo il testo in un box evidente
+    # Mostriamo il testo
     st.info(f"📄 **Testo ID: {texto['id']}**")
     st.markdown(f"### {texto['text']}")
     st.markdown("---")
     
     st.write("Valuta il testo sopra secondo i seguenti criteri (1 = Minimo, 5 = Massimo):")
     
+    # --- FORM DI VALUTAZIONE ---
     with st.form("evaluation"):
         m1 = st.slider("Quanto è CHIARO questo testo?", 1, 5, 3)
         m2 = st.slider("Quanto è PERSUASIVO?", 1, 5, 3)
         m3 = st.slider("Correttezza GRAMMATICALE?", 1, 5, 3)
         
+        # Unico bottone permesso dentro il form
         submit_eval = st.form_submit_button("Invia Valutazione")
         
+    # --- LOGICA POST INVIO (Fuori dal form) ---
     if submit_eval:
         # 1. Prepariamo la riga da salvare
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -98,7 +103,7 @@ else:
             user['gender'],
             user['education'],
             texto['id'],
-            texto['text'], # Salviamo anche il testo per comodità di lettura nel foglio
+            texto['text'],
             m1,
             m2,
             m3
@@ -108,18 +113,26 @@ else:
         try:
             sheet = get_google_sheet()
             sheet.append_row(row_to_append)
-            st.success("✅ Valutazione salvata con successo!")
+            
+            # FEEDBACK POSITIVO
+            st.success("✅ Valutazione salvata! Caricamento prossimo testo...")
+            
+            # 3. RESET E RIAVVIO AUTOMATICO
+            # Resettiamo il testo così al prossimo giro ne pesca uno nuovo
+            st.session_state['current_text'] = None
+            
+            # Piccola pausa per far leggere all'utente che è andato tutto bene
+            time.sleep(1.5) 
+            
+            # Ricarica la pagina automaticamente
+            st.rerun()
+            
         except Exception as e:
             st.error(f"Errore nel salvataggio: {e}")
-        
-        # 3. Reset del testo per il prossimo giro
-        st.session_state['current_text'] = None
-        
-        # Opzioni per continuare
-        col1, col2 = st.columns(2)
-        with col1:
-            st.write("Vuoi valutare un altro testo?")
-            st.button("Sì, continua", on_click=st.rerun) # Ricarica e pesca nuovo testo
-        with col2:
-            if st.button("No, ho finito"):
-                st.stop() # Ferma l'app
+
+    # Tasto per uscire (sempre visibile fuori dal form, opzionale)
+    st.markdown("---")
+    if st.button("Termina Sessione (Esci)"):
+        st.session_state.clear() # Pulisce la memoria
+        st.success("Grazie per il tuo contributo!")
+        st.stop()

@@ -2,93 +2,122 @@ import streamlit as st
 import json
 import random
 import pandas as pd
-import os
 from datetime import datetime
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
 
-# 1. Caricamento dei testi (cache per non ricaricare ogni volta)
+# --- CONFIGURAZIONE GOOGLE SHEETS ---
+# Questa funzione si collega al foglio usando le "chiavi segrete"
+def get_google_sheet():
+    # Definiamo i permessi necessari
+    scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
+    
+    # Carichiamo le credenziali dai "Secrets" di Streamlit (vedi Fase 3)
+    creds_dict = st.secrets["gcp_service_account"]
+    creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
+    
+    client = gspread.authorize(creds)
+    
+    # QUI devi mettere il nome esatto del tuo foglio Google
+    sheet = client.open("Valutazione_Testi_Data").sheet1 
+    return sheet
+
+# --- CARICAMENTO DATI ---
 @st.cache_data
-def load_data():
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    json_path = os.path.join(base_dir, "dataset_small.json")
-    with open(json_path, 'r') as f:
+def load_texts():
+    # Assicurati di avere il file testi.json nella stessa cartella
+    with open('testi.json', 'r', encoding='utf-8') as f:
         data = json.load(f)
     return data
 
-data = load_data()
+data_texts = load_texts()
 
-# 2. Gestione dello Stato (Memoria dell'utente)
+# --- GESTIONE STATO UTENTE ---
 if 'user_info' not in st.session_state:
-    st.session_state['user_info'] = None # Dati demografici non ancora inseriti
+    st.session_state['user_info'] = None
 if 'current_text' not in st.session_state:
-    st.session_state['current_text'] = None # Nessun testo selezionato al momento
+    st.session_state['current_text'] = None
 
-# --- FASE 1: RACCOLTA DEMOGRAFICA ---
+# --- PARTE 1: QUESTIONARIO DEMOGRAFICO ---
 if st.session_state['user_info'] is None:
-    st.title("Benvenuto allo studio di valutazione")
-    st.write("Per iniziare, inserisci alcune informazioni su di te.")
+    st.title("📋 Studio di Valutazione Testi")
+    st.markdown("Benvenuto. Prima di iniziare, ti chiediamo alcune informazioni anonime per fini statistici.")
     
-    with st.form("demographics_form"):
-        age = st.number_input("Età", min_value=18, max_value=100)
-        gender = st.selectbox("Genere", ["Uomo", "Donna", "Non binario", "Preferisco non specificare"])
-        education = st.selectbox("Titolo di studio", ["Diploma", "Laurea Triennale", "Laurea Magistrale", "Dottorato"])
+    with st.form("demographics"):
+        age = st.number_input("La tua età", min_value=18, max_value=99, step=1)
+        gender = st.selectbox("Genere", ["Uomo", "Donna", "Non binario", "Altro", "Preferisco non specificare"])
+        education = st.selectbox("Titolo di Studio", ["Licenza Media", "Diploma", "Laurea Triennale", "Laurea Magistrale", "Dottorato/Post-Laurea"])
         
-        submitted = st.form_submit_button("Inizia Valutazione")
+        submit_demo = st.form_submit_button("Inizia a Valutare")
         
-        if submitted:
-            # Salviamo i dati nella sessione e ricarichiamo la pagina
+        if submit_demo:
+            # Salviamo i dati in memoria
             st.session_state['user_info'] = {
                 "age": age,
                 "gender": gender,
                 "education": education,
-                "session_id": str(datetime.now().timestamp()) # ID unico per l'utente
+                "session_id": str(datetime.now().timestamp()) # ID unico per sessione
             }
             st.rerun()
 
-# --- FASE 2: VALUTAZIONE TESTI ---
+# --- PARTE 2: VALUTAZIONE TESTI ---
 else:
-    st.title("Valuta il testo")
+    st.title("Valutazione")
     
-    # Se non c'è un testo attivo, ne scegliamo uno a caso
+    # Se non c'è un testo selezionato, ne prendiamo uno a caso
     if st.session_state['current_text'] is None:
-        st.session_state['current_text'] = random.choice(data)
+        st.session_state['current_text'] = random.choice(data_texts)
     
-    text_to_show = st.session_state['current_text']
+    texto = st.session_state['current_text']
     
-    st.markdown(f"### Leggi il seguente testo:\n\n> {text_to_show['text']}")
+    # Mostriamo il testo in un box evidente
+    st.info(f"📄 **Testo ID {texto['id']}**")
+    st.markdown(f"### {texto['text']}")
     st.markdown("---")
     
-    # Form di valutazione
-    with st.form("evaluation_form"):
-        metric_1 = st.slider("Quanto è chiaro questo testo?", 1, 5)
-        metric_2 = st.slider("Quanto è persuasivo?", 1, 5)
-        metric_3 = st.radio("Grammatica corretta?", [1, 2, 3, 4, 5], horizontal=True)
+    st.write("Valuta il testo sopra secondo i seguenti criteri (1 = Minimo, 5 = Massimo):")
+    
+    with st.form("evaluation"):
+        m1 = st.slider("Quanto è CHIARO questo testo?", 1, 5, 3)
+        m2 = st.slider("Quanto è PERSUASIVO?", 1, 5, 3)
+        m3 = st.slider("Correttezza GRAMMATICALE?", 1, 5, 3)
         
         submit_eval = st.form_submit_button("Invia Valutazione")
         
         if submit_eval:
-            # Qui raccogliamo TUTTI i dati (Demografici + Valutazione + ID Testo)
-            result = {
-                **st.session_state['user_info'], # Espande i dati demografici
-                "text_id": text_to_show['id'],
-                "clarity": metric_1,
-                "persuasiveness": metric_2,
-                "grammar": metric_3,
-                "timestamp": datetime.now()
-            }
+            # 1. Prepariamo la riga da salvare
+            timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            user = st.session_state['user_info']
             
-            # --- SALVATAGGIO (Vedi Step 3) ---
-            save_to_database(result) 
+            row_to_append = [
+                timestamp,
+                user['session_id'],
+                user['age'],
+                user['gender'],
+                user['education'],
+                texto['id'],
+                texto['text'], # Salviamo anche il testo per comodità di lettura nel foglio
+                m1,
+                m2,
+                m3
+            ]
             
-            st.success("Valutazione salvata!")
+            # 2. Inviamo a Google Sheets
+            try:
+                sheet = get_google_sheet()
+                sheet.append_row(row_to_append)
+                st.success("✅ Valutazione salvata con successo!")
+            except Exception as e:
+                st.error(f"Errore nel salvataggio: {e}")
             
-            # Reset del testo per pescarne uno nuovo al prossimo giro
+            # 3. Reset del testo per il prossimo giro
             st.session_state['current_text'] = None
             
-            # Bottoni per continuare o uscire
+            # Opzioni per continuare
             col1, col2 = st.columns(2)
             with col1:
-                if st.button("Valuta un altro testo"):
-                    st.rerun()
+                st.write("Vuoi valutare un altro testo?")
+                st.button("Sì, continua", on_click=st.rerun) # Ricarica e pesca nuovo testo
             with col2:
-                if st.button("Termina sessione"):
-                    st.stop()
+                if st.button("No, ho finito"):
+                    st.stop() # Ferma l'app

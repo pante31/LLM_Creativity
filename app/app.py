@@ -9,6 +9,13 @@ import pandas as pd
 from datetime import datetime
 from oauth2client.service_account import ServiceAccountCredentials
 
+# Se l'utente ha premuto "Esci", mostriamo i saluti e blocchiamo tutto QUI.
+if 'finito' in st.session_state and st.session_state['finito']:
+    st.title("Grazie!")
+    st.success("La tua sessione è terminata. Puoi chiudere questa scheda.")
+    st.balloons() # Un po' di festa opzionale
+    st.stop() # QUI st.stop() funziona perché impedisce di caricare tutto il resto sotto!
+
 # --- CONFIGURAZIONE GOOGLE SHEETS ---
 # Questa funzione si collega al foglio usando le "chiavi segrete"
 def get_google_sheet():
@@ -144,4 +151,5 @@ else:
         st.session_state.clear()
         st.success("Grazie per il tuo contributo!")
         time.sleep(1)
-        st.stop()
+        st.session_state['finito'] = True
+        st.rerun() # Ricarica la pagina dall'inizio

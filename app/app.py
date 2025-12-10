@@ -131,7 +131,7 @@ else:
             st.success("✅ Valutazione salvata! Caricamento prossimo testo...")
             
             st.session_state['current_text'] = None
-            time.sleep(1.5)
+            time.sleep(5)
             st.rerun()
 
     # Tasto per uscire (lo mettiamo fuori dal placeholder così sparisce o resta a seconda della logica)

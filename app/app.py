@@ -38,9 +38,7 @@ def get_google_sheet():
 def scroll_to_top():
     js = """
     <script>
-        var body = window.parent.document.querySelector(".main");
-        console.log(body);
-        body.scrollTop = 0;
+        window.parent.scrollTo({ top: 0, behavior: 'smooth' });
     </script>
     """
     components.html(js, height=0)

@@ -137,7 +137,16 @@ else:
             
             # Ricarica la pagina (FUORI dal try/except per evitare errori)
             st.rerun()
-
+    
+    # Bottoni per continuare o uscire
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("Valuta un altro testo"):
+            st.rerun()
+    with col2:
+        if st.button("Termina sessione"):
+            st.stop()
+    '''
     # Tasto per uscire
     st.markdown("---")
     if st.button("Termina Sessione (Esci)"):
@@ -145,3 +154,4 @@ else:
         st.success("Grazie per il tuo contributo!")
         time.sleep(1)
         st.stop()
+    '''

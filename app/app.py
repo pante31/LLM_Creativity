@@ -6,8 +6,10 @@ import gspread
 import streamlit as st
 import pandas as pd
 
+
 from datetime import datetime
 from oauth2client.service_account import ServiceAccountCredentials
+import streamlit.components.v1 as components
 
 # Se l'utente ha premuto "Esci", mostriamo i saluti e blocchiamo tutto QUI.
 if 'finito' in st.session_state and st.session_state['finito']:
@@ -31,6 +33,17 @@ def get_google_sheet():
     # QUI devi mettere il nome esatto del tuo foglio Google
     sheet = client.open("texts_evaluation_sheet").sheet1 
     return sheet
+
+# --- FUNZIONE PER SCROLLARE IN CIMA ---
+def scroll_to_top():
+    js = """
+    <script>
+        var body = window.parent.document.querySelector(".main");
+        console.log(body);
+        body.scrollTop = 0;
+    </script>
+    """
+    components.html(js, height=0)
 
 # --- CARICAMENTO DATI ---
 @st.cache_data
@@ -132,17 +145,20 @@ else:
             else:
                 st.error(f"Errore tecnico: {e}")
 
-        # 3. SE È ANDATO TUTTO BENE (O SEMBRAVA UN ERRORE 200)
+        # 3. SE È ANDATO TUTTO BENE
         if successo:
             st.success("✅ Valutazione salvata! Caricamento prossimo testo...")
             
             # Reset del testo
             st.session_state['current_text'] = None
             
+            # Riporta l'utent in cima alla pagina
+            scroll_to_top()
+            
             # Pausa per leggere il messaggio
             time.sleep(1.5) 
             
-            # Ricarica la pagina (FUORI dal try/except per evitare errori)
+            # Ricarica la pagina
             st.rerun()
     
     # Tasto per uscire

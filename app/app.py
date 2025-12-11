@@ -1,6 +1,7 @@
 import streamlit as st
 import json
 import random
+import os
 import pandas as pd
 from datetime import datetime
 import time
@@ -69,8 +70,9 @@ def get_google_sheet():
 
 @st.cache_data
 def load_texts():
-    # Carica il file JSON (assicurati che abbia il campo "lang")
-    with open('dataset_small.json', 'r', encoding='utf-8') as f:
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    json_path = os.path.join(base_dir, "dataset_small.json")
+    with open(json_path, 'r') as f:
         data = json.load(f)
     return data
 

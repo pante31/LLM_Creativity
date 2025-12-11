@@ -65,12 +65,12 @@ def get_google_sheet():
     creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
     client = gspread.authorize(creds)
     # Assicurati che il nome sia corretto
-    return client.open("Valutazione_Testi_Data").sheet1 
+    return client.open("texts_evaluation_sheet").sheet1 
 
 @st.cache_data
 def load_texts():
     # Carica il file JSON (assicurati che abbia il campo "lang")
-    with open('testi.json', 'r', encoding='utf-8') as f:
+    with open('dataset_small.json', 'r', encoding='utf-8') as f:
         data = json.load(f)
     return data
 

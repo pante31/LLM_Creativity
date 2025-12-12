@@ -21,7 +21,7 @@ T = {
         Una volta completato, potrai passare al testo successivo oppure terminare la tua valutazione.
         Tutti i testi sono in italiano o inglese, a seconda della tua scelta. Le tue risposte saranno salvate in modo anonimo per scopi di ricerca.
         \n\n
-        **DISCLAIMER:**\n
+        DISCLAIMER:\n
         \t- I testi sono originariamente in inglese, pertanto alcune traduzioni potrebbero non risultare perfettamente naturali in italiano. Se possiedi una buona conoscenza della lingua inglese, è consigliato leggere il testo originale.
         \n
         Prima di iniziare, inserisci alcune informazioni statistiche.""",
@@ -30,7 +30,7 @@ T = {
         Once completed, you can move to the next text or finish your session.
         All texts are in Italian or English, depending on your choice. Your answers will be saved anonymously for research purposes.
         \n\n
-        **DISCLAIMER:**\n
+        DISCLAIMER:\n
         \t- All texts were originally written in English. Therefore, the Italian versions might be less accurate/natural. If you are fluent in English, we recommend selecting the English version.
         \n
         Before starting, please provide some demographic information."""

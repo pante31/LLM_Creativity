@@ -13,11 +13,11 @@ from oauth2client.service_account import ServiceAccountCredentials
 # Qui definiamo tutte le parole che cambiano
 T = {
     "title_demo": {
-        "it": "📋 Studio di Valutazione Testi",
-        "en": "📋 Text Evaluation Study"
+        "it": "📋 Valutazione della Creatività su Testi",
+        "en": "📋 Text Creativity Evaluation"
     },
     "intro_demo": {
-        "it": "Benvenuto. Prima di iniziare, inserisci alcune informazioni statistiche.",
+        "it": "#Benvenuto. Prima di iniziare, inserisci alcune informazioni statistiche.",
         "en": "Welcome. Before starting, please provide some statistical info."
     },
     "age": {"it": "Età", "en": "Age"},
@@ -199,10 +199,6 @@ else:
         ]
         
         successo = False
-
-        # DEBUG: Stampa cosa stiamo per inviare
-        print("STO INVIANDO QUESTA RIGA:")
-        print(row_to_append)
 
         try:
             sheet = get_google_sheet()

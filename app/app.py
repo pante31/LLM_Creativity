@@ -61,7 +61,7 @@ T = {
     "success_msg": {"it": "✅ Valutazione salvata! Caricamento prossimo testo...", "en": "✅ Saved! Loading next text..."},
     "finish_msg": {"it": "🎉 Hai valutato TUTTI i testi disponibili! Grazie.", "en": "🎉 You evaluated ALL available texts! Thank you."},
     "exit_btn": {"it": "Termina Sessione (Esci)", "en": "End Session (Exit)"},
-    "thank_you": {"it": "Grazie per il tuo contributo!", "en": "Thank you for your contribution!"},
+    "thank_you": {"it": "❤️Grazie per il tuo contributo!", "en": "❤️Thank you for your contribution!"},
     "final_message": {
         "it": "Grazie per aver dedicato il tuo tempo a questo studio. Un ampio campione di valutazioni è cruciale per garantire la significatività statistica dei dati raccolti.\n\nIl tuo contributo è fondamentale per comprendere le differenze di percezione tra lettori umani e sistemi automatici. Gli stessi testi, infatti, verranno sottoposti a valutazione da parte di diversi Large Language Models (LLM) utilizzando le medesime metriche.\n\nSe desideri supportare ulteriormente questa ricerca, ti invitiamo a condividere il link con altre persone potenzialmente interessate. Ogni contributo aggiuntivo migliora la qualità dei risultati.\n\nGrazie ancora per la collaborazione. Puoi ora chiudere questa finestra.",
         

@@ -34,12 +34,12 @@ T = {
     },
     "edu": {"it": "Titolo di Studio", "en": "Education Level"},
     "edu_opts": {
-        "it": ["Licenza Media", "Diploma", "Laurea Triennale", "Laurea Magistrale", "Dottorato"],
+        "it": ["Licenza Media", "Diploma", "Laurea Triennale", "Laurea Magistrale", "Dottorato", "Altro"],
         "en": ["High School", "Bachelor's Degree", "Master's Degree", "PhD", "Other"]
     },
     "start_btn": {"it": "Inizia a Valutare", "en": "Start Evaluating"},
     "eval_title": {"it": "Valutazione", "en": "Evaluation"},
-    "text_id_label": {"it": "Testo ID", "en": "Text ID"},
+    "text_id_label": {"it": "ID Testo", "en": "Text ID"},
     "seen_label": {"it": "Visti", "en": "Seen"},
     "instructions": {
         "it": "Valuta il testo sopra secondo i seguenti criteri (1 = Minimo, 5 = Massimo):",
@@ -47,6 +47,7 @@ T = {
     },
     "q1": {"it": "Quanto è CHIARO questo testo?", "en": "How CLEAR is this text?"},
     "q2": {"it": "Quanto è PERSUASIVO?", "en": "How PERSUASIVE is it?"},
+    "q3": {"it": "Correttezza GRAMMATICALE?", "en": "GRAMMATICAL correctness?"},
     "q3": {"it": "Correttezza GRAMMATICALE?", "en": "GRAMMATICAL correctness?"},
     "submit_btn": {"it": "Invia Valutazione", "en": "Submit Evaluation"},
     "success_msg": {"it": "✅ Valutazione salvata! Caricamento prossimo testo...", "en": "✅ Saved! Loading next text..."},

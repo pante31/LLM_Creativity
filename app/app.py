@@ -18,7 +18,7 @@ T = {
     },
 "intro_demo": {
         "it": """Benvenuto. Ti sarà richiesto di leggere un breve testo (~2-3 min) e poi di valutarne alcune caratteristiche.
-        Una volta completato, potrai passare al testo successivo oppure terminare la tua valutazione.
+        Una volta completato, potrai passare al testo successivo oppure terminare la tua valutazione.(`Termina Valutazione`).
         Tutti i testi sono disponibili sia in italiano che in inglese, a seconda della tua scelta. Le tue risposte saranno salvate in modo anonimo per scopi di ricerca.\n\n_**DISCLAIMER**_: I testi sono originariamente in inglese, pertanto alcune traduzioni potrebbero non risultare perfettamente naturali in italiano.
         Se possiedi una buona conoscenza della lingua inglese, è consigliato leggere il testo originale.\n\nPrima di iniziare, inserisci alcune informazioni statistiche.""",
         "en": """Welcome. You will be asked to read a short text (~2-3 min) and then rate some of its features.

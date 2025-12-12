@@ -45,10 +45,18 @@ T = {
         "it": "Valuta il testo sopra secondo i seguenti criteri (1 = Minimo, 5 = Massimo):",
         "en": "Rate the text above according to the following criteria (1 = Lowest, 5 = Highest):"
     },
-    "q1": {"it": "Quanto è CHIARO questo testo?", "en": "How CLEAR is this text?"},
-    "q2": {"it": "Quanto è PERSUASIVO?", "en": "How PERSUASIVE is it?"},
-    "q3": {"it": "Correttezza GRAMMATICALE?", "en": "GRAMMATICAL correctness?"},
-    "q3": {"it": "Correttezza GRAMMATICALE?", "en": "GRAMMATICAL correctness?"},
+    "q1": {"it": "SORPRESA (_La capacità del testo di stupire il lettore. Il contenuto prende una direzione inaspettata, introduce un colpo di scena o rompe le aspettative comuni rispetto all'argomento trattato?_)", "en": "SURPRISE (_The text's ability to astonish the reader. Does the content take an unexpected turn, introduce a plot twist, or break common expectations regarding the topic discussed?_)"},
+    "q2": {"it": "NOVITÀ(_Il grado di innovazione del concetto. L'idea alla base del testo è fresca e nuova, oppure è una rielaborazione di concetti già noti e abusati?_)", "en": "NOVELTY(_The degree of innovation of the concept. Is the idea behind the text fresh and new, or is it a rehash of well-known and overused concepts?_)"},
+    "q3": {"it": "VALORE(_Il merito intrinseco del testo. La lettura è stata arricchente, interessante o emotivamente coinvolgente? Il testo ha un 'peso' o una qualità letteraria percepibile?_)", "en": "VALUE(_The intrinsic merit of the text. Was the reading enriching, interesting, or emotionally engaging? Does the text have a perceivable 'weight' or literary quality?_)"},
+    "q4": {"it": "AUTENTICITÀ(_La percezione di una voce genuina e personale. Il testo sembra scritto con uno stile proprio e sentito, oppure appare meccanico, artificiale o copiato?_)", "en": "AUTHENTICITY(_The perception of a genuine and personal voice. Does the text seem written with its own heartfelt style, or does it appear mechanical, artificial, or copied?_)"},
+    "q5": {"it": "ORIGINALITÀ(_La rarità statistica dell'approccio. Rispetto ad altri testi sullo stesso tema, quanto è unico questo approccio? Evita i cliché e i luoghi comuni?_)", "en": "ORIGINALITY(_The statistical rarity of the approach. Compared to other texts on the same topic, how unique is this approach? Does it avoid clichés and commonplaces?_)"},
+    "q6": {"it": "EFFICACIA(_La capacità del testo di raggiungere il suo obiettivo. Se è una storia, intrattiene? Se è una risposta, soddisfa la richiesta (prompt) in modo completo e convincente?_)", "en": "EFFECTIVENESS(_The text's ability to achieve its goal. If it's a story, does it entertain? If it's a response, does it satisfy the request (prompt) in a complete and convincing manner?_)"},
+    "q7": {"it": "FLUIDITÀ(_La scorrevolezza linguistica e la facilità di generazione delle idee. Il testo si legge bene, senza intoppi grammaticali o logici? Le idee fluiscono naturalmente l'una nell'altra?_)", "en": "FLUENCY(_Linguistic smoothness and ease of idea generation. Does the text read well, without grammatical or logical hiccups? Do the ideas flow naturally from one to another?_)"},
+    "q8": {"it": "FLESSIBILITÀ(_La varietà di prospettive o temi toccati. Il testo riesce a collegare concetti diversi, cambiare punto di vista o adattarsi a vincoli narrativi in modo agile?_)", "en": "FLEXIBILITY(_The variety of perspectives or themes touched upon. Does the text manage to connect different concepts, change viewpoints, or adapt to narrative constraints in an agile manner?_)"},
+    "q9": {"it": "ELABORAZIONE(_La ricchezza di dettagli e la profondità di sviluppo. Il testo espande l'idea principale con descrizioni vivide, sfumature e complessità, o rimane superficiale e scarno?_)", "en": "ELABORATION(_The richness of details and depth of development. Does the text expand the main idea with vivid descriptions, nuances, and complexity, or does it remain superficial and sparse?_)"},
+    "q10": {"it": "UTILITÀ(_La pertinenza e l'applicabilità rispetto al contesto. Il testo è coerente con la richiesta iniziale? È 'utile' nel senso che funziona come risposta valida e sensata al prompt?_)", "en": "UTILITY(_The relevance and applicability to the context. Is the text consistent with the initial request? Is it 'useful' in the sense that it functions as a valid and sensible response to the prompt?_)"},
+    "q11": {"it": "CREATIVITÀ(_Il giudizio complessivo sull'ingegno e l'immaginazione del testo. L'autore è riuscito a combinare idee in modo unico, andando oltre l'ovvio per creare qualcosa che colpisce sia per la sua inventiva che per la sua esecuzione? È il 'fattore wow' che distingue un testo banale da uno ispirato._)", "en": "CREATIVITY(_The overall judgment on the text's ingenuity and imagination. Has the author managed to combine ideas in a unique way, going beyond the obvious to create something that impresses both for its inventiveness and execution? Is it the 'wow factor' that distinguishes a mundane text from an inspired one._)"},
+
     "submit_btn": {"it": "Invia Valutazione", "en": "Submit Evaluation"},
     "success_msg": {"it": "✅ Valutazione salvata! Caricamento prossimo testo...", "en": "✅ Saved! Loading next text..."},
     "finish_msg": {"it": "🎉 Hai valutato TUTTI i testi disponibili! Grazie.", "en": "🎉 You evaluated ALL available texts! Thank you."},
@@ -182,6 +190,14 @@ else:
             m1 = st.slider(T['q1'][curr_lang], 1, 5, 3)
             m2 = st.slider(T['q2'][curr_lang], 1, 5, 3)
             m3 = st.slider(T['q3'][curr_lang], 1, 5, 3)
+            m4 = st.slider(T['q4'][curr_lang], 1, 5, 3)
+            m5 = st.slider(T['q5'][curr_lang], 1, 5, 3)
+            m6 = st.slider(T['q6'][curr_lang], 1, 5, 3)
+            m7 = st.slider(T['q7'][curr_lang], 1, 5, 3)
+            m8 = st.slider(T['q8'][curr_lang], 1, 5, 3)
+            m9 = st.slider(T['q9'][curr_lang], 1, 5, 3)
+            m10 = st.slider(T['q10'][curr_lang], 1, 5, 3)
+            m11 = st.slider(T['q11'][curr_lang], 1, 5, 3)
             
             submit_eval = st.form_submit_button(T['submit_btn'][curr_lang])
 

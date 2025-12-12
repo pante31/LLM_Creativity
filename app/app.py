@@ -199,6 +199,11 @@ else:
         ]
         
         successo = False
+
+        # DEBUG: Stampa cosa stiamo per inviare
+        print("STO INVIANDO QUESTA RIGA:")
+        print(row_to_append)
+
         try:
             sheet = get_google_sheet()
             sheet.append_row(row_to_append)

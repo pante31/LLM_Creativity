@@ -14,11 +14,26 @@ from oauth2client.service_account import ServiceAccountCredentials
 T = {
     "title_demo": {
         "it": "📋 Studio sulla Creatività Testuale",
-        "en": "📋 Text Evaluation Study"
+        "en": "📋 Study about Text Creativity"
     },
-    "intro_demo": {
-        "it": "Benvenuto. Prima di iniziare, inserisci alcune informazioni statistiche.",
-        "en": "Welcome. Before starting, please provide some statistical info."
+"intro_demo": {
+        "it": """Benvenuto. Ti sarà richiesto di leggere un breve testo (~2-3 min) e poi di valutarne alcune caratteristiche.
+        Una volta completato, potrai passare al testo successivo oppure terminare la tua valutazione.
+        Tutti i testi sono in italiano o inglese, a seconda della tua scelta. Le tue risposte saranno salvate in modo anonimo per scopi di ricerca.
+
+        **DISCLAIMER:**
+        - I testi sono originariamente in inglese, pertanto alcune traduzioni potrebbero non risultare perfettamente naturali in italiano. Se possiedi una buona conoscenza della lingua inglese, è consigliato leggere il testo originale.
+
+        Prima di iniziare, inserisci alcune informazioni statistiche.""",
+
+        "en": """Welcome. You will be asked to read a short text (~2-3 min) and then rate some of its features.
+        Once completed, you can move to the next text or finish your session.
+        All texts are in Italian or English, depending on your choice. Your answers will be saved anonymously for research purposes.
+
+        **DISCLAIMER:**
+        - All texts were originally written in English. Therefore, the Italian versions might be less accurate/natural. If you are fluent in English, we recommend selecting the English version.
+
+        Before starting, please provide some demographic information."""
     },
     "age": {"it": "Età", "en": "Age"},
     "gender": {"it": "Genere", "en": "Gender"},

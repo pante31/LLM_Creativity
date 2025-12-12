@@ -63,13 +63,11 @@ T = {
     "exit_btn": {"it": "Termina Sessione (Esci)", "en": "End Session (Exit)"},
     "thank_you": {"it": "Grazie per il tuo contributo!", "en": "Thank you for your contribution!"},
     "final_message": {
-        "it": """Grazie per aver dedicato il tuo tempo a questo studio. Un ampio campione di valutazioni è cruciale per garantire la significatività statistica dei dati raccolti.\n\n
-        Il tuo contributo è fondamentale per comprendere le differenze di percezione tra lettori umani e sistemi automatici. Gli stessi testi, infatti, verranno sottoposti a valutazione da parte di diversi Large Language Models (LLM) utilizzando le medesime metriche.\n\n
+        "it": """Grazie per aver dedicato il tuo tempo a questo studio. Un ampio campione di valutazioni è cruciale per garantire la significatività statistica dei dati raccolti.\n\nIl tuo contributo è fondamentale per comprendere le differenze di percezione tra lettori umani e sistemi automatici. Gli stessi testi, infatti, verranno sottoposti a valutazione da parte di diversi Large Language Models (LLM) utilizzando le medesime metriche.\n\n
         Se desideri supportare ulteriormente questa ricerca, ti invitiamo a condividere il link con altre persone potenzialmente interessate. Ogni contributo aggiuntivo migliora la qualità dei risultati.\n\n
         Grazie ancora per la collaborazione. Puoi ora chiudere questa finestra.""",
         
-        "en": """Thank you for dedicating your time to this study. A broad sample of evaluations is crucial to ensure the statistical significance of the collected data.\n\n
-        Your contribution is essential for understanding the differences in perception between human readers and automated systems. These texts will subsequently be evaluated by various Large Language Models (LLMs) using the same metrics.\n\n
+        "en": """Thank you for dedicating your time to this study. A broad sample of evaluations is crucial to ensure the statistical significance of the collected data.\n\nYour contribution is essential for understanding the differences in perception between human readers and automated systems. These texts will subsequently be evaluated by various Large Language Models (LLMs) using the same metrics.\n\n
         If you wish to further support this research, we invite you to share this link with others who might be interested. Every additional contribution improves the quality of our results.\n\n
         Thank you again for your collaboration. You may now close this window."""
     },

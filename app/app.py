@@ -74,8 +74,33 @@ T = {
 def scroll_to_top():
     js = """
     <script>
-        var body = window.parent.document.querySelector(".main");
-        body.scrollTop = 0;
+        // Ritardo di 100ms per dare tempo al rendering mobile di assestarsi
+        setTimeout(function() {
+            var targets = [
+                // Tenta di scrollare la finestra principale
+                window.parent.document.documentElement,
+                window.parent.document.body,
+                // Tenta di scrollare i contenitori specifici di Streamlit
+                window.parent.document.querySelector('[data-testid="stAppViewContainer"]'),
+                window.parent.document.querySelector('[data-testid="stMain"]'),
+                window.parent.document.querySelector(".main")
+            ];
+
+            targets.forEach(function(target) {
+                if (target) {
+                    target.scrollTop = 0;
+                    // Metodo alternativo per browser moderni
+                    target.scroll({
+                        top: 0,
+                        left: 0,
+                        behavior: 'auto' // 'auto' è scatto immediato, 'smooth' è animato
+                    });
+                }
+            });
+            
+            // Tentativo finale globale
+            window.parent.scrollTo(0, 0);
+        }, 150);
     </script>
     """
     components.html(js, height=0)

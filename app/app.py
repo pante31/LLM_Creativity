@@ -126,6 +126,7 @@ data_texts = load_texts()
 # --- BLOCCO USCITA ---
 if 'finito' in st.session_state and st.session_state['finito']:
     lang = st.session_state.get('language_choice', 'it') # Recupera lingua per saluto
+    scroll_to_top()
     st.title(T['thank_you'][lang])
     st.write(T['final_message'][lang])
     st.balloons()

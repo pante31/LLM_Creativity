@@ -149,6 +149,7 @@ if st.session_state['user_info'] is None:
                 "language": curr_lang, # Salviamo anche la lingua scelta
                 "session_id": str(datetime.now().timestamp())
             }
+            scroll_to_top()
             st.rerun()
 
 # ==========================================
@@ -181,7 +182,6 @@ else:
             st.session_state['current_text'] = random.choice(testi_disponibili)
         
         texto = st.session_state['current_text']
-        scroll_to_top()
         
         # Mostra Testo
         label_id = T['text_id_label'][curr_lang]

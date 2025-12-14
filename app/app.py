@@ -149,13 +149,17 @@ if st.session_state['user_info'] is None:
                 "language": curr_lang, # Salviamo anche la lingua scelta
                 "session_id": str(datetime.now().timestamp())
             }
-            scroll_to_top()
+            st.session_state['force_scroll'] = True
             st.rerun()
 
 # ==========================================
 # FASE 2: VALUTAZIONE
 # ==========================================
 else:
+    if st.session_state.get('force_scroll', False):
+        scroll_to_top()
+        st.session_state['force_scroll'] = False
+
     placeholder_valutazione = st.empty()
 
     with placeholder_valutazione.container():

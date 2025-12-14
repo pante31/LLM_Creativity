@@ -182,6 +182,35 @@ if st.session_state['user_info'] is None:
 # FASE 2: VALUTAZIONE
 # ==========================================
 else:
+    # ---------------------------------------------------------
+    # 1. LOGICA CAMBIO LINGUA "LIVE"
+    # Se l'utente ha cambiato lingua nel selettore, cerchiamo 
+    # la versione tradotta dello stesso testo che sta leggendo.
+    # ---------------------------------------------------------
+    if st.session_state['current_text'] is not None:
+        text_obj = st.session_state['current_text']
+        target_lang = st.session_state['language_choice']
+        
+        # Se la lingua del testo attuale è diversa da quella scelta nel menu
+        if text_obj.get('lang') != target_lang:
+            # Cerchiamo nel dataset un testo con lo STESSO 'prompt' ma nella NUOVA lingua
+            # next() prende il primo risultato trovato o restituisce None
+            versione_tradotta = next(
+                (t for t in data_texts if t['prompt'] == text_obj['prompt'] and t['lang'] == target_lang), 
+                None
+            )
+            
+            if versione_tradotta:
+                # Sostituiamo il testo in memoria con quello tradotto
+                st.session_state['current_text'] = versione_tradotta
+                st.rerun() # Ricarichiamo la pagina per mostrare il nuovo testo
+            else:
+                # Caso raro: traduzione mancante
+                st.warning(f"⚠️ Traduzione in {target_lang} non disponibile per questo testo.")
+
+    # ---------------------------------------------------------
+    # 2. GESTIONE SCROLL (Codice precedente)
+    # ---------------------------------------------------------
     if st.session_state.get('force_scroll', False):
         scroll_to_top()
         st.session_state['force_scroll'] = False

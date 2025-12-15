@@ -37,6 +37,11 @@ T = {
         "it": ["Licenza Media", "Diploma", "Laurea Triennale", "Laurea Magistrale", "Dottorato", "Altro"],
         "en": ["High School", "Bachelor's Degree", "Master's Degree", "PhD", "Other"]
     },
+    "exp": {"it": "Esperienza con LLMs (_ChatGPT_, _Gemini_, _Claude_, ...). Quanto spesso li usi?", "en": "Experience with LLMs(_ChatGPT_, _Gemini_, _Claude_, ...). How often do you use them?"},
+    "exp_opts": {
+        "it": ["Mai usati", "Provati per curiosità", "Qualche volta", "Spesso","Se non tutti i giorni, quasi"],
+        "en": ["Never used", "Tried out of curiosity", "Occasionally", "Often", "If not daily, almost"]
+    },
     "start_btn": {"it": "Inizia a Valutare", "en": "Start Evaluating"},
     "eval_title": {"it": "Valutazione", "en": "Evaluation"},
     "text_id_label": {"it": "ID Testo", "en": "Text ID"},
@@ -164,6 +169,7 @@ if st.session_state['user_info'] is None:
         # Le opzioni cambiano in base alla lingua
         gender = st.selectbox(T['gender'][curr_lang], T['gender_opts'][curr_lang])
         education = st.selectbox(T['edu'][curr_lang], T['edu_opts'][curr_lang])
+        experience = st.selectbox(T['exp'][curr_lang], T['exp_opts'][curr_lang])
         
         submit_demo = st.form_submit_button(T['start_btn'][curr_lang])
         
@@ -172,6 +178,7 @@ if st.session_state['user_info'] is None:
                 "age": age,
                 "gender": gender,
                 "education": education,
+                "experience": experience,
                 "language": curr_lang, # Salviamo anche la lingua scelta
                 "session_id": str(datetime.now().timestamp())
             }
@@ -282,6 +289,7 @@ else:
             user['gender'],
             user['age'],
             user['education'],
+            user['experience'],
             texto['id'],
             texto['text'],
             m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11

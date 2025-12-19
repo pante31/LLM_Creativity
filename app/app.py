@@ -13,7 +13,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 # Qui definiamo tutte le parole che cambiano
 T = {
     "title_demo": {
-        "it": "📋 Studio sulla Creatività Testuale!!!!!",
+        "it": "📋 Studio sulla Creatività Testuale",
         "en": "📋 Study about Text Creativity"
     },
 "intro_demo": {

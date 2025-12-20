@@ -121,7 +121,7 @@ def get_google_sheet():
 @st.cache_data
 def load_texts():
     base_dir = os.path.dirname(os.path.abspath(__file__))
-    json_path = os.path.join(base_dir, "dataset_small.json")
+    json_path = os.path.join(base_dir, "dataset_full_200.json")
     with open(json_path, 'r') as f:
         data = json.load(f)
     return data

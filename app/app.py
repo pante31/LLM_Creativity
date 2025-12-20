@@ -183,7 +183,7 @@ if 'finito' in st.session_state and st.session_state['finito']:
 col_logo, col_lang = st.columns([8, 2])
 with col_lang:
     # Salviamo la scelta nello stato
-    lang_code = st.radio("Language / Lingua", ["🇮🇹 Italiano", "🇬🇧 English"], index=0)
+    lang_code = st.radio("Language / Lingua", ["🇮🇹 Italiano", "🇬🇧 English"], index=1)
     
     # Convertiamo la scelta in 'it' o 'en' per usare il dizionario
     curr_lang = 'it' if "Italiano" in lang_code else 'en'

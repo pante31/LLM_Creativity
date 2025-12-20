@@ -25,7 +25,7 @@ T = {
     **Procedura:** Ti verrà chiesto di leggere alcuni brevi testi e valutarli tramite scale numeriche. Verranno inoltre richieste alcune informazioni demografiche di base (età, sesso, titolo di studio) e il tuo livello di esperienza nell'uso dei Large Language Models.
     
     **Anonimato e Open Science:** La partecipazione è completamente anonima. Non verranno registrati nomi, indirizzi IP o altri dati identificativi. 
-    In ottica di "Scienza Aperta", i dati anonimizzati verranno conservati a tempo indeterminato e potranno essere resi **pubblicamente disponibili** alla comunità scientifica come dataset per future ricerche.
+    In ottica di "Open Science", i dati anonimizzati verranno conservati a tempo indeterminato e potranno essere resi **pubblicamente disponibili** alla comunità scientifica come dataset per future ricerche.
     
     **Volontarietà e Recesso:** La partecipazione è strettamente volontaria. Puoi interrompere la sessione in qualsiasi momento chiudendo il browser senza alcuna conseguenza. Tuttavia, data la natura totalmente anonima dei dati, una volta inviato il questionario **non sarà possibile richiederne la cancellazione**, in quanto non saremo in grado di associare le risposte alla tua identità.
     

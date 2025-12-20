@@ -29,7 +29,7 @@ T = {
     
     **Volontarietà e Recesso:** La partecipazione è strettamente volontaria. Puoi interrompere la sessione in qualsiasi momento chiudendo il browser senza alcuna conseguenza. Tuttavia, data la natura totalmente anonima dei dati, una volta inviato il questionario **non sarà possibile richiederne la cancellazione**, in quanto non saremo in grado di associare le risposte alla tua identità.
     
-    **Contatti:** Per domande o dubbi riguardanti questo studio, puoi contattare il responsabile della ricerca all'indirizzo: [INSERIRE TUA EMAIL].
+    **Contatti:** Per domande o dubbi riguardanti questo studio, puoi contattare il responsabile della ricerca all'indirizzo: alessandro.tutone@studio.unibo.it.
     
     Cliccando su **"Accetto e Partecipo"**, dichiari di aver letto queste informazioni, di essere maggiorenne e di acconsentire volontariamente all'uso e alla eventuale pubblicazione dei dati in forma anonima.
     """,
@@ -46,7 +46,7 @@ T = {
     
     **Voluntary Participation and Withdrawal:** Participation is strictly voluntary. You may end the session at any time by closing your browser with no consequences. However, due to the fully anonymous nature of the data, **it will not be possible to request deletion** of your data after submission, as we will be unable to link the responses to your identity.
     
-    **Contact:** For questions regarding this study, you may contact the research lead at: [INSERT YOUR EMAIL].
+    **Contact:** For questions regarding this study, you may contact the research lead at: alessandro.tutone@studio.unibo.it.
     
     By clicking **"I Agree and Participate"**, you declare that you have read this information, are of legal age, and voluntarily consent to the use and potential publication of the data in an anonymous form.
     """},

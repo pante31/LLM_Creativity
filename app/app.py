@@ -418,6 +418,3 @@ else:
             scroll_to_top()
             time.sleep(1.5)
             st.rerun()
-
-    if not submit_eval:
-        st.markdown("---")

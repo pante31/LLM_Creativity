@@ -321,6 +321,12 @@ else:
 
     placeholder_valutazione = st.empty()
 
+    if not submit_eval:
+        st.markdown("---")
+        if st.button(T['exit_btn'][curr_lang]):
+            st.session_state['finito'] = True
+            st.rerun()
+
     with placeholder_valutazione.container():
         st.title(T['eval_title'][curr_lang])
         
@@ -413,10 +419,4 @@ else:
             st.session_state['current_text'] = None
             scroll_to_top()
             time.sleep(1.5)
-            st.rerun()
-
-    if not submit_eval:
-        st.markdown("---")
-        if st.button(T['exit_btn'][curr_lang]):
-            st.session_state['finito'] = True
             st.rerun()

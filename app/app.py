@@ -21,7 +21,24 @@ T = {
         "en": "📝 Informed Consent for Research Participation"
     },
     "consent_text": {
-    "it": """**Ti invitiamo a leggere attentamente quanto segue prima di proseguire.**\n\n**Scopo della ricerca:** Lo studio si propone di analizzare la correlazione tra la valutazione umana di testi creativi (scritti sia da esseri umani che da LLM) e la valutazione automatica effettuata tramite approccio LLM-as-a-judge (l'uso di LLM per giudicare testi basandosi su criteri predefiniti). L'obiettivo finale è verificare il grado di allineamento tra le metriche di giudizio umane e quelle generate dai modelli linguistici.\n\n**Procedura di raccolta:** La raccolta dati avverrà tramite un'applicazione web dedicata. Ai partecipanti verrà richiesto di:\n\n\t1. Fornire alcune informazioni demografiche di base (età, genere, titolo di studio) e indicare il proprio livello di esperienza con gli LLM.\n\n\t2. Leggere un breve testo e valutarne le caratteristiche utilizzando una scala Likert che va da 1 a 5. (circa 5-10 minuti tra lettura e valutazione)\n\n\t3. Al termine, scegliere se concludere la sessione o procedere con la valutazione di un nuovo testo, fino a esaurimento del campione.\n\n**Anonimato e Open Science:** Tutti i dati raccolti saranno **rigorosamente anonimi** e non riconducibili all'identità dei partecipanti (non verranno raccolti indirizzi IP, nomi o altri dati identificativi). I dati verranno salvati su foglio di calcolo in cloud (Google Sheets) con accesso riservato. In ottica di "Open Science", i dati anonimizzati verranno conservati a tempo indeterminato e verranno resi **pubblicamente disponibili** alla comunità scientifica come dataset per future ricerche nel campo dell'Natural Language Processing (NLP).\n\n**Volontarietà e Recesso:** La partecipazione è strettamente volontaria. Puoi interrompere la sessione in qualsiasi momento chiudendo il browser senza alcuna conseguenza. Tuttavia, data la natura totalmente anonima dei dati, una volta inviato il questionario **non sarà possibile richiederne la cancellazione**, in quanto non saremo in grado di associare le risposte alla tua identità.\n\n**Contatti:** Per domande o dubbi riguardanti questo studio, puoi contattare il responsabile della ricerca all'indirizzo: alessandro.tutone@studio.unibo.it.\n\nCliccando su **"Accetto e Partecipo"**, dichiari di aver letto queste informazioni, di essere maggiorenne e di acconsentire volontariamente all'uso e alla eventuale pubblicazione dei dati in forma anonima.""",
+    "it": """
+    **Ti invitiamo a leggere attentamente quanto segue prima di proseguire.**
+    
+    **Scopo della ricerca:** Lo studio si propone di analizzare la correlazione tra la valutazione umana di testi creativi (scritti sia da esseri umani che da LLM) e la valutazione automatica effettuata tramite approccio LLM-as-a-judge (l'uso di LLM per giudicare testi basandosi su criteri predefiniti). L'obiettivo finale è verificare il grado di allineamento tra le metriche di giudizio umane e quelle generate dai modelli linguistici.
+    
+    **Procedura di raccolta:** La raccolta dati avverrà tramite un'applicazione web dedicata. Ai partecipanti verrà richiesto di:
+    \t1. Fornire alcune informazioni demografiche di base (età, genere, titolo di studio) e indicare il proprio livello di esperienza con gli LLM.
+    \t2. Leggere un breve testo e valutarne le caratteristiche utilizzando una scala Likert che va da 1 a 5. (circa 5-10 minuti tra lettura e valutazione).
+    \t3. Al termine, scegliere se concludere la sessione o procedere con la valutazione di un nuovo testo, fino a esaurimento del campione.
+    
+    **Anonimato e Open Science:** Tutti i dati raccolti saranno **rigorosamente anonimi** e non riconducibili all'identità dei partecipanti (non verranno raccolti indirizzi IP, nomi o altri dati identificativi). I dati verranno salvati su foglio di calcolo in cloud (Google Sheets) con accesso riservato. In ottica di "Open Science", i dati anonimizzati verranno conservati a tempo indeterminato e verranno resi **pubblicamente disponibili** alla comunità scientifica come dataset per future ricerche nel campo dell'Natural Language Processing (NLP).
+    
+    **Volontarietà e Recesso:** La partecipazione è strettamente volontaria. Puoi interrompere la sessione in qualsiasi momento chiudendo il browser senza alcuna conseguenza. Tuttavia, data la natura totalmente anonima dei dati, una volta inviato il questionario **non sarà possibile richiederne la cancellazione**, in quanto non saremo in grado di associare le risposte alla tua identità.
+    
+    **Contatti:** Per domande o dubbi riguardanti questo studio, puoi contattare il responsabile della ricerca all'indirizzo: alessandro.tutone@studio.unibo.it.
+    
+    Cliccando su **"Accetto e Partecipo"**, dichiari di aver letto queste informazioni, di essere maggiorenne e di acconsentire volontariamente all'uso e alla eventuale pubblicazione dei dati in forma anonima.
+    """,
     "en": """
     **Please read the following information carefully before proceeding.**
     

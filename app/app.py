@@ -12,6 +12,10 @@ from oauth2client.service_account import ServiceAccountCredentials
 # --- 1. DIZIONARIO TRADUZIONI ---
 # Qui definiamo tutte le parole che cambiano
 T = {
+    "warning_note": {
+        "it": "⚠️ **NOTA IMPORTANTE**: I testi sono originariamente in inglese, pertanto alcune traduzioni potrebbero non risultare perfettamente naturali in italiano. Se possiedi una buona conoscenza della lingua inglese, è consigliato leggere il testo nella sua lingua originale.",
+        "en": ""
+    },
     "consent_title": {
         "it": "📝 Informativa e Consenso alla Partecipazione alla Ricerca",
         "en": "📝 Informed Consent for Research Participation"
@@ -60,12 +64,11 @@ T = {
     "intro_demo": {
         "it": """**Benvenuto**! Ti sarà richiesto di leggere un breve testo (~5-10 min) e poi di valutarne alcune caratteristiche.
         Una volta completato, potrai passare al testo successivo oppure terminare la tua valutazione.
-        Tutti i testi sono disponibili sia in italiano che in inglese, a seconda della tua scelta. Le tue risposte saranno salvate in modo anonimo per scopi di ricerca.\n\n_**DISCLAIMER**_: I testi sono originariamente in inglese, pertanto alcune traduzioni potrebbero non risultare perfettamente naturali in italiano.
-        Se possiedi una buona conoscenza della lingua inglese, è consigliato leggere il testo originale.\n\nPrima di iniziare, inserisci alcune informazioni statistiche.""",
+        Tutti i testi sono disponibili sia in italiano che in inglese, a seconda della tua scelta. Le tue risposte saranno salvate in modo anonimo per scopi di ricerca.\n\nPrima di iniziare, inserisci alcune informazioni statistiche.""",
         "en": """**Welcome**! You will be asked to read a short text (~5-10 min) and then rate some of its features.
         Once completed, you can move to the next text or finish your session.
-        All texts are available both in Italian an in English, depending on your choice. Your answers will be saved anonymously for research purposes.\n\n_**DISCLAIMER**_: All texts were originally written in English. Therefore, the Italian versions might be less accurate/natural. 
-        If you are fluent in English, we recommend selecting the English version.\n\nBefore starting, please provide some demographic information."""
+        All texts are available both in Italian an in English, depending on your choice. Your answers will be saved anonymously for research purposes.\n\n_**IMPORTANT NOTE**_: All texts were originally written in English. Therefore, the Italian versions might be less accurate/natural. 
+        If you are fluent in English, we recommend to keep selected the English version.\n\nBefore starting, please provide some demographic information."""
     },
     "age": {"it": "Età", "en": "Age"},
     "gender": {"it": "Genere", "en": "Gender"},
@@ -226,14 +229,7 @@ if not st.session_state['consent_given']:
 # FASE 1: DATI DEMOGRAFICI
 # ==========================================
 elif st.session_state['user_info'] is None:
-    # Giallo (attenzione)
-    st.warning("⚠️ **NOTA IMPORTANTE**: Questo è un avviso che attira l'attenzione.")
-
-    # Blu (informativo)
-    st.info("ℹ️ **NOTA IMPORTANTE**: Questa è un'informazione utile per l'utente.")
-
-    # Rosso (errore/critico)
-    st.error("🚨 **NOTA IMPORTANTE**: Leggere attentamente prima di procedere.")
+    st.error(T['warning_note'][curr_lang])
     st.title(T['title_demo'][curr_lang])
     st.write(T['intro_demo'][curr_lang])
     

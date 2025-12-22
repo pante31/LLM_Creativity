@@ -67,7 +67,7 @@ T = {
         Tutti i testi sono disponibili sia in italiano che in inglese, a seconda della tua scelta. Le tue risposte saranno salvate in modo anonimo per scopi di ricerca.\n\nPrima di iniziare, inserisci alcune informazioni statistiche.""",
         "en": """**Welcome**! You will be asked to read a short text (~5-10 min) and then rate some of its features.
         Once completed, you can move to the next text or finish your session.
-        All texts are available both in Italian an in English, depending on your choice. Your answers will be saved anonymously for research purposes.\n\n_**IMPORTANT NOTE**_: All texts were originally written in English. Therefore, the Italian versions might be less accurate/natural. 
+        All texts are available both in Italian an in English, depending on your choice. Your answers will be saved anonymously for research purposes.\n\n**IMPORTANT NOTE**: All texts were originally written in English. Therefore, the Italian versions might be less accurate/natural. 
         If you are fluent in English, we recommend to keep selected the English version.\n\nBefore starting, please provide some demographic information."""
     },
     "age": {"it": "Età", "en": "Age"},

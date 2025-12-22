@@ -211,6 +211,7 @@ if 'consent_given' not in st.session_state:
 # FASE 0: CONSENSO INFORMATO
 # ==========================================
 if not st.session_state['consent_given']:
+    st.info("ℹ️ **NOTA IMPORTANTE**: Questa è un'informazione utile per l'utente.")
     st.title(T['consent_title'][curr_lang])
     
     # Box stile "documento"
@@ -260,7 +261,7 @@ elif st.session_state['user_info'] is None:
             }
             st.session_state['force_scroll'] = True
             st.rerun()
-            
+
 # ==========================================
 # FASE 2: VALUTAZIONE
 # ==========================================

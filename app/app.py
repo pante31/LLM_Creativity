@@ -226,7 +226,14 @@ if not st.session_state['consent_given']:
 # FASE 1: DATI DEMOGRAFICI
 # ==========================================
 elif st.session_state['user_info'] is None:
+    # Giallo (attenzione)
+    st.warning("⚠️ **NOTA IMPORTANTE**: Questo è un avviso che attira l'attenzione.")
+
+    # Blu (informativo)
     st.info("ℹ️ **NOTA IMPORTANTE**: Questa è un'informazione utile per l'utente.")
+
+    # Rosso (errore/critico)
+    st.error("🚨 **NOTA IMPORTANTE**: Leggere attentamente prima di procedere.")
     st.title(T['title_demo'][curr_lang])
     st.write(T['intro_demo'][curr_lang])
     

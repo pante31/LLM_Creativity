@@ -260,6 +260,7 @@ elif st.session_state['user_info'] is None:
             st.session_state['force_scroll'] = True
             st.rerun()
 
+    st.header("Questo è un titolo medio-grande")
     st.write(T['work_explaination'][curr_lang])
 
 # ==========================================

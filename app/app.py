@@ -322,11 +322,11 @@ else:
     placeholder_valutazione = st.empty()
     
     with placeholder_valutazione.container():
-        st.title(T['eval_title'][curr_lang])
-
         if st.button(T['exit_btn'][curr_lang]):
             st.session_state['finito'] = True
             st.rerun()
+
+        st.title(T['eval_title'][curr_lang])
         
         # LOGICA DI PESCA (FILTRATA PER LINGUA)
         if st.session_state['current_text'] is None:

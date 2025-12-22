@@ -2,6 +2,7 @@ import streamlit as st
 import json
 import random
 import os
+import pycountry
 import pandas as pd
 from datetime import datetime
 import time
@@ -10,6 +11,10 @@ import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
 # --- 1. DIZIONARIO TRADUZIONI ---
+priority_langs = ["Italian", "English", "French", "Spanish", "German"]
+all_langs_iso = [lang.name for lang in pycountry.languages if hasattr(lang, 'name')]
+other_langs = sorted([l for l in all_langs_iso if l not in priority_langs])
+final_list = priority_langs + other_langs
 # Qui definiamo tutte le parole che cambiano
 T = {
     "warning_note": {
@@ -78,6 +83,11 @@ T = {
         Once completed, you can move to the next text or finish your session.
         All texts are available both in Italian an in English, depending on your choice. Your answers will be saved anonymously for research purposes.\n\n**IMPORTANT NOTE**: All texts were originally written in English. Therefore, the Italian versions might be less accurate/natural. 
         If you are fluent in English, we recommend to keep selected the English version.\n\nBefore starting, please provide some demographic information."""
+    },
+    "language": {"it": "Lingua madre", "en": "Native language"},
+    "language_ops": {
+        "it": final_list,
+        "en": final_list
     },
     "age": {"it": "Età", "en": "Age"},
     "gender": {"it": "Genere", "en": "Gender"},
@@ -247,7 +257,13 @@ elif st.session_state['user_info'] is None:
     with st.form("demographics"):
         age = st.number_input(T['age'][curr_lang], min_value=18, max_value=99, step=1)
         
-        # Le opzioni cambiano in base alla lingua
+        # Informazioni demografiche
+        # lista delle lingue tramite pycountry
+        language = st.selectbox(
+            T['language'][curr_lang],
+            T['language_ops'][curr_lang],
+            index=[0 if curr_lang == 'it' else 1][0]
+        )
         gender = st.selectbox(T['gender'][curr_lang], T['gender_opts'][curr_lang])
         education = st.selectbox(T['edu'][curr_lang], T['edu_opts'][curr_lang])
         experience = st.selectbox(T['exp'][curr_lang], T['exp_opts'][curr_lang])

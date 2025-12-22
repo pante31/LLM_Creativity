@@ -229,7 +229,8 @@ if not st.session_state['consent_given']:
 # FASE 1: DATI DEMOGRAFICI
 # ==========================================
 elif st.session_state['user_info'] is None:
-    st.error(T['warning_note'][curr_lang])
+    if T['warning_note'][curr_lang]:
+        st.error(T['warning_note'][curr_lang])
     st.title(T['title_demo'][curr_lang])
     st.write(T['intro_demo'][curr_lang])
     

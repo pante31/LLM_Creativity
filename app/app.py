@@ -16,6 +16,10 @@ T = {
         "it": "⚠️ **NOTA IMPORTANTE**: I testi sono originariamente in inglese, pertanto alcune traduzioni potrebbero non risultare perfettamente naturali in italiano. Se possiedi una buona conoscenza della lingua inglese, è consigliato leggere il testo nella sua lingua originale.",
         "en": ""
     },
+    "llm_definition": {
+        "it": "ℹ️ **COSA SONO GLI LLM?** I Large Language Models (LLM) sono modelli di intelligenza artificiale in grado di comprendere e generare testo in linguaggio naturale. Esempi noti includono _ChatGPT_, _Claude_ e _Gemini_. Questi modelli sono addestrati su enormi quantità di dati testuali e possono svolgere una varietà di compiti linguistici, come la scrittura creativa, la traduzione e la risposta a domande.",
+        "en": "ℹ️ **WHAT ARE LLMs?** Large Language Models (LLMs) are artificial intelligence models designed to understand and generate natural language text. Well-known examples include _ChatGPT_, _Claude_ and _Gemini_. These models are trained on vast amounts of textual data and can perform a variety of linguistic tasks, such as creative writing, translation, and answering questions."
+    },
     "consent_title": {
         "it": "📝 Informativa e Consenso di Partecipazione alla Ricerca",
         "en": "📝 Informed Consent for Research Participation"
@@ -211,7 +215,7 @@ if 'consent_given' not in st.session_state:
 # FASE 0: CONSENSO INFORMATO
 # ==========================================
 if not st.session_state['consent_given']:
-    st.info("ℹ️ **NOTA IMPORTANTE**: Questa è un'informazione utile per l'utente.")
+    st.info(T['llm_definition'][curr_lang])
     st.title(T['consent_title'][curr_lang])
     
     # Box stile "documento"

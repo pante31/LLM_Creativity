@@ -99,7 +99,7 @@ T = {
     "edu": {"it": "Titolo di Studio", "en": "Education Level"},
     "edu_opts": {
         "it": ["Licenza Media", "Diploma", "Laurea Triennale", "Laurea Magistrale", "Dottorato", "Altro"],
-        "en": ["High School", "Bachelor's Degree", "Master's Degree", "PhD", "Other"]
+        "en": ["Less than High School", "High School", "Bachelor's Degree", "Master's Degree", "PhD", "Other"]
     },
     "exp": {"it": "Esperienza con LLMs (_ChatGPT_, _Gemini_, _Claude_, ...). Quanto spesso li usi?", "en": "Experience with LLMs(_ChatGPT_, _Gemini_, _Claude_, ...). How often do you use them?"},
     "exp_opts": {

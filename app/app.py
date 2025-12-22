@@ -17,7 +17,7 @@ T = {
         "en": ""
     },
     "consent_title": {
-        "it": "📝 Informativa e Consenso alla Partecipazione alla Ricerca",
+        "it": "📝 Informativa e Consenso di Partecipazione alla Ricerca",
         "en": "📝 Informed Consent for Research Participation"
     },
     "consent_text": {

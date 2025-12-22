@@ -22,9 +22,7 @@ T = {
     },
     "consent_text": {
     "it": """
-    **Ti invitiamo a leggere attentamente quanto segue prima di proseguire.**
-    
-    **Scopo della ricerca:** Lo studio si propone di analizzare la correlazione tra la valutazione umana di testi creativi (scritti sia da esseri umani che da LLM) e la valutazione automatica effettuata tramite approccio LLM-as-a-judge (l'uso di LLM per giudicare testi basandosi su criteri predefiniti). L'obiettivo finale è verificare il grado di allineamento tra le metriche di giudizio umane e quelle generate dai modelli linguistici.
+    **Ti invitiamo a leggere attentamente quanto segue prima di proseguire.**\n**Scopo della ricerca:** Lo studio si propone di analizzare la correlazione tra la valutazione umana di testi creativi (scritti sia da esseri umani che da LLM) e la valutazione automatica effettuata tramite approccio LLM-as-a-judge (l'uso di LLM per giudicare testi basandosi su criteri predefiniti). L'obiettivo finale è verificare il grado di allineamento tra le metriche di giudizio umane e quelle generate dai modelli linguistici.
     
     **Procedura di raccolta:** La raccolta dati avverrà tramite un'applicazione web dedicata. Ai partecipanti verrà richiesto di:\n\t1. Fornire alcune informazioni demografiche di base (età, genere, titolo di studio) e indicare il proprio livello di esperienza con gli LLM.\n\t2. Leggere un breve testo e valutarne le caratteristiche utilizzando una scala Likert che va da 1 a 5. (circa 5-10 minuti tra lettura e valutazione)\n\t3. Al termine, scegliere se concludere la sessione o procedere con la valutazione di un nuovo testo, fino a esaurimento del campione.
     
@@ -220,7 +218,7 @@ if not st.session_state['consent_given']:
     
     # Box stile "documento"
     with st.container(border=True):
-        st.write(T['consent_text'][curr_lang])
+        st.markdown(T['consent_text'][curr_lang])
     
     col_c1, col_c2 = st.columns([1, 1])
     

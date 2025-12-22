@@ -257,7 +257,7 @@ elif st.session_state['user_info'] is None:
     
     with st.form("demographics"):
         # Informazioni demografiche
-        language = st.selectbox(
+        native_language = st.selectbox(
             T['language'][curr_lang],
             T['language_ops'][curr_lang],
             index=[0 if curr_lang == 'it' else 1][0]
@@ -271,11 +271,12 @@ elif st.session_state['user_info'] is None:
         
         if submit_demo:
             st.session_state['user_info'] = {
+                "native_language": native_language,
                 "age": age,
                 "gender": gender,
                 "education": education,
                 "experience": experience,
-                "language": curr_lang, # Salviamo anche la lingua scelta
+                "txt_language": curr_lang, # Salviamo anche la lingua scelta
                 "session_id": str(datetime.now().timestamp())
             }
             st.session_state['force_scroll'] = True
@@ -381,12 +382,13 @@ else:
         row_to_append = [
             timestamp,
             user['session_id'],
-            user.get('language', 'it'), # Colonna lingua
+            user['native_language'],
             user['gender'],
             user['age'],
             user['education'],
             user['experience'],
             texto['id'],
+            user.get('language', 'it'),
             texto['author'],
             texto['text'],
             m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11

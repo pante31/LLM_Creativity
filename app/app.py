@@ -37,7 +37,7 @@ T = {
     
     **Contatti:** Per domande o dubbi riguardanti questo studio, puoi contattare il responsabile della ricerca all'indirizzo: alessandro.tutone@studio.unibo.it.
     
-    Cliccando su **"Accetto e Partecipo"**, dichiari di aver letto queste informazioni, di essere maggiorenne e di acconsentire volontariamente all'uso e alla eventuale pubblicazione dei dati in forma anonima.
+    Cliccando su **"_Accetto e Partecipo_"**, dichiari di aver letto queste informazioni, di essere maggiorenne e di acconsentire volontariamente all'uso e alla eventuale pubblicazione dei dati in forma anonima.
     """,
     "en": """
     **Please read the following information carefully before proceeding.**
@@ -56,7 +56,7 @@ T = {
     
     **Contact:** For questions or concerns regarding this study, you may contact the research lead at: alessandro.tutone@studio.unibo.it.
     
-    By clicking **"I Agree and Participate"**, you declare that you have read this information, are of legal age, and voluntarily consent to the use and potential publication of the data in an anonymous form.
+    By clicking **"_I Agree and Participate_"**, you declare that you have read this information, are of legal age, and voluntarily consent to the use and potential publication of the data in an anonymous form.
     """
     },
     "agree_btn": {"it": "✅ Accetto e Partecipo", "en": "✅ I Agree and Participate"},

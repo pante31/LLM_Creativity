@@ -421,6 +421,3 @@ else:
 
     if not submit_eval:
         st.markdown("---")
-        if st.button(T['exit_btn'][curr_lang]):
-            st.session_state['finito'] = True
-            st.rerun()

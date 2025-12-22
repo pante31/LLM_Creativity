@@ -15,6 +15,7 @@ priority_langs = ["Italian", "English", "French", "Spanish", "German"]
 all_langs_iso = [lang.name for lang in pycountry.languages if hasattr(lang, 'name')]
 other_langs = sorted([l for l in all_langs_iso if l not in priority_langs])
 final_list = priority_langs + other_langs
+no_ita_list = [l for l in final_list if l != "Italian"]
 # Qui definiamo tutte le parole che cambiano
 T = {
     "warning_note": {
@@ -86,7 +87,7 @@ T = {
     },
     "language": {"it": "Lingua madre", "en": "Native language"},
     "language_ops": {
-        "it": final_list,
+        "it": ['Italiano']+no_ita_list,
         "en": final_list
     },
     "age": {"it": "Età", "en": "Age"},

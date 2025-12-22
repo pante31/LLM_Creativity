@@ -255,15 +255,13 @@ elif st.session_state['user_info'] is None:
     st.write(T['intro_demo'][curr_lang])
     
     with st.form("demographics"):
-        age = st.number_input(T['age'][curr_lang], min_value=18, max_value=99, step=1)
-        
         # Informazioni demografiche
-        # lista delle lingue tramite pycountry
         language = st.selectbox(
             T['language'][curr_lang],
             T['language_ops'][curr_lang],
             index=[0 if curr_lang == 'it' else 1][0]
         )
+        age = st.number_input(T['age'][curr_lang], min_value=18, max_value=99, step=1)
         gender = st.selectbox(T['gender'][curr_lang], T['gender_opts'][curr_lang])
         education = st.selectbox(T['edu'][curr_lang], T['edu_opts'][curr_lang])
         experience = st.selectbox(T['exp'][curr_lang], T['exp_opts'][curr_lang])

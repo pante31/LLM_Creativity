@@ -86,7 +86,7 @@ T = {
         If you are fluent in English, we recommend to keep selected the English version.\n\nBefore starting, please provide some demographic information."""
     },
     "language": {"it": "Lingua madre", "en": "Native language"},
-    "language_ops": {
+    "language_opts": {
         "it": ['Italiano']+no_ita_list,
         "en": final_list
     },
@@ -259,7 +259,7 @@ elif st.session_state['user_info'] is None:
         # Informazioni demografiche
         native_language = st.selectbox(
             T['language'][curr_lang],
-            T['language_ops'][curr_lang],
+            T['language_opts'][curr_lang],
             index=[0 if curr_lang == 'it' else 1][0]
         )
         age = st.number_input(T['age'][curr_lang], min_value=18, max_value=99, step=1)
@@ -271,11 +271,11 @@ elif st.session_state['user_info'] is None:
         
         if submit_demo:
             st.session_state['user_info'] = {
-                "native_language": T['language_ops']['en'][T['language_ops'][curr_lang].index(native_language)],
+                "native_language": T['language_opts']['en'][T['language_opts'][curr_lang].index(native_language)],
                 "age": age,
-                "gender": T['gender']['en'][T['gender_opts'][curr_lang].index(gender)],
-                "education": T['edu']['en'][T['edu_opts'][curr_lang].index(education)],
-                "experience": T['exp']['en'][T['exp_opts'][curr_lang].index(experience)],
+                "gender": T['gender_opts']['en'][T['gender_opts'][curr_lang].index(gender)],
+                "education": T['edu_opts']['en'][T['edu_opts'][curr_lang].index(education)],
+                "experience": T['exp_opts']['en'][T['exp_opts'][curr_lang].index(experience)],
                 "txt_language": curr_lang, # Salviamo anche la lingua scelta
                 "session_id": str(datetime.now().timestamp())
             }

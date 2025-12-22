@@ -103,7 +103,7 @@ T = {
     },
     "exp": {"it": "Esperienza con LLMs (_ChatGPT_, _Gemini_, _Claude_, ...). Quanto spesso li usi?", "en": "Experience with LLMs(_ChatGPT_, _Gemini_, _Claude_, ...). How often do you use them?"},
     "exp_opts": {
-        "it": ["Mai usati", "Provati per curiosità", "Qualche volta", "Spesso","Se non tutti i giorni, quasi"],
+        "it": ["Mai usati", "Provati per curiosità", "Qualche volta", "Spesso", "Se non tutti i giorni, quasi"],
         "en": ["Never used", "Tried out of curiosity", "Occasionally", "Often", "If not daily, almost"]
     },
     "start_btn": {"it": "Inizia a Valutare", "en": "Start Evaluating"},

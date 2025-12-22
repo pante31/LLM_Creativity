@@ -75,14 +75,6 @@ T = {
         All texts are available both in Italian an in English, depending on your choice. Your answers will be saved anonymously for research purposes.\n\n**IMPORTANT NOTE**: All texts were originally written in English. Therefore, the Italian versions might be less accurate/natural. 
         If you are fluent in English, we recommend to keep selected the English version.\n\nBefore starting, please provide some demographic information."""
     },
-    "work_explaination_title": {
-        "it": "📖 Informazioni sullo Studio",
-        "en": "📖 About the Study"
-    },
-    "work_explaination": {
-        "it": "Leggi attentamente il testo qui sopra e valuta ciascuna delle seguenti caratteristiche utilizzando la scala da 1 (minimo) a 5 (massimo).",
-        "en": "Carefully read the text above and rate each of the following features using the scale from 1 (lowest) to 5 (highest)."
-    },
     "age": {"it": "Età", "en": "Age"},
     "gender": {"it": "Genere", "en": "Gender"},
     "gender_opts": {
@@ -268,10 +260,7 @@ elif st.session_state['user_info'] is None:
             }
             st.session_state['force_scroll'] = True
             st.rerun()
-
-    st.header(T["work_explaination_title"][curr_lang])
-    st.write(T['work_explaination'][curr_lang])
-
+            
 # ==========================================
 # FASE 2: VALUTAZIONE
 # ==========================================

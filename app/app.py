@@ -395,52 +395,49 @@ else:
     if submit_eval:
         placeholder_valutazione.empty()
         
-        # Mostra uno spinner mentre prova a salvare
+        # Preparazione dati
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        user = st.session_state['user_info']
+        
+        row_to_append = [
+            timestamp,
+            user['session_id'],
+            user['native_language'],
+            user['gender'],
+            user['age'],
+            user['education'],
+            user['experience'],
+            texto['id'],
+            user.get('language', 'it'),
+            texto['author'],
+            texto['text'],
+            m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11
+        ]
+        
+        successo = False
+        errore = None
+
+        # Salvataggio con rotella di caricamento
         with st.spinner("Salvataggio in corso... / Saving data..."):
-            
-            timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            user = st.session_state['user_info']
-            
-            row_to_append = [
-                timestamp,
-                user['session_id'],
-                user['native_language'],
-                user['gender'],
-                user['age'],
-                user['education'],
-                user['experience'],
-                texto['id'],
-                user.get('language', 'it'),
-                texto['author'],
-                texto['text'],
-                m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11
-            ]
-            
-            # Prova a salvare con retry (fa al massimo 3 tentativi) - Utente vede rotellina
             try:
                 sheet = get_google_sheet()
                 successo, errore = save_to_google_sheet_with_retry(sheet, row_to_append)
             except Exception as e:
-                # se get_google_sheet fallisce
                 successo = False
                 errore = str(e)
 
-            if successo:
-                st.session_state['seen_ids'].append(texto['id'])
-                st.success(T['success_msg'][curr_lang])
-                st.session_state['current_text'] = None
-                scroll_to_top()
-                time.sleep(1.5)
-                st.rerun()
+        # Risultato salvataggio - Gestione del "falso errore" 200 di gspread
+        if not successo and errore and "200" in str(errore):
+            successo = True
+
+        if successo:
+            st.session_state['seen_ids'].append(texto['id'])
+            st.success(T['success_msg'][curr_lang])
             
-            else:
-                # Se l'errore contiene "200", è un falso positivo di gspread (successo mascherato)
-                if errore and "200" in errore:
-                    st.session_state['seen_ids'].append(texto['id'])
-                    st.success(T['success_msg'][curr_lang])
-                    st.session_state['current_text'] = None
-                    scroll_to_top()
-                    time.sleep(1.5)
-                    st.rerun()
-                else:
-                    st.error(f"{T['error_save'][curr_lang]} (Server Error: {errore}). Please try again.")
+            st.session_state['current_text'] = None
+            scroll_to_top()
+            time.sleep(1.5)
+            st.rerun()
+        
+        else:
+            st.error(f"{T['error_save'][curr_lang]} (Server Error: {errore}). Please try again.")

@@ -3,7 +3,6 @@ import json
 import random
 import os
 import pycountry
-import pandas as pd
 from datetime import datetime
 import time
 import streamlit.components.v1 as components

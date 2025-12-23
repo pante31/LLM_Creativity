@@ -9,13 +9,13 @@ import streamlit.components.v1 as components
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
-# --- 1. DIZIONARIO TRADUZIONI ---
+# --- DIZIONARIO TRADUZIONI ---
 priority_langs = ["Italian", "English", "French", "Spanish", "German"]
 all_langs_iso = [lang.name for lang in pycountry.languages if hasattr(lang, 'name')]
 other_langs = sorted([l for l in all_langs_iso if l not in priority_langs])
 final_list = priority_langs + other_langs
 no_ita_list = [l for l in final_list if l != "Italian"]
-# Qui definiamo tutte le parole che cambiano
+
 T = {
     "warning_note": {
         "it": "⚠️ **NOTA IMPORTANTE**: I testi sono originariamente in inglese, pertanto alcune traduzioni potrebbero non risultare perfettamente naturali in italiano. Se possiedi una buona conoscenza della lingua inglese, è consigliato leggere il testo nella sua lingua originale.",
@@ -138,7 +138,7 @@ T = {
     "error_save": {"it": "Errore nel salvataggio", "en": "Error saving data"}
 }
 
-# --- FUNZIONI DI UTILITÀ ---
+# --- FUNZIONI ---
 def scroll_to_top():
     js = """
     <script>
@@ -179,7 +179,32 @@ def get_google_sheet():
     creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
     client = gspread.authorize(creds)
     # Assicurati che il nome sia corretto
-    return client.open("texts_evaluation_sheet").sheet1 
+    return client.open("texts_evaluation_sheet").sheet1
+
+def save_to_google_sheet_with_retry(sheet, row, max_retries=3):
+    """
+    Tenta di salvare la riga. Se incontra un rate limit (Errore 429),
+    aspetta e riprova con tempi crescenti.
+    """
+    for attempt in range(max_retries):
+        try:
+            sheet.append_row(row)
+            return True, None # Successo, nessun errore
+            
+        except Exception as e:
+            error_msg = str(e).lower()
+            # Codici tipici di Google per "Troppe richieste": 429 o RESOURCE_EXHAUSTED
+            if "429" in error_msg or "quota" in error_msg or "resource_exhausted" in error_msg:
+                if attempt < max_retries - 1:
+                    # Calcola il tempo di attesa: 2 secondi, poi 4, poi 8...
+                    wait_time = 2 ** (attempt + 1)
+                    time.sleep(wait_time + random.random()) # Aggiunto un po' di casualità
+                    continue # Riprova
+            
+            # Se è un altro errore (es. auth fallita) o sono finito i tentativi
+            return False, str(e)
+            
+    return False, "Max retries exceeded"
 
 @st.cache_data
 def load_texts():
@@ -200,14 +225,14 @@ if 'finito' in st.session_state and st.session_state['finito']:
     st.balloons()
     st.stop()
 
-# --- SELETTORE LINGUA (Sidebar o Top) ---
-# Lo mettiamo nella sidebar o in alto. Qui lo metto in alto a destra usando le colonne.
+# --- SELETTORE LINGUA ---
+# Messo in alto a destra usando le colonne
 col_logo, col_lang = st.columns([8, 2])
 with col_lang:
-    # Salviamo la scelta nello stato
+    # Salvare lingua selezionata
     lang_code = st.radio("Language / Lingua", ["🇮🇹 Italiano", "🇬🇧 English"], index=1)
     
-    # Convertiamo la scelta in 'it' o 'en' per usare il dizionario
+    # Convertire lingua in 'it' o 'en' per usare il dizionario
     curr_lang = 'it' if "Italiano" in lang_code else 'en'
     st.session_state['language_choice'] = curr_lang
 
@@ -285,18 +310,13 @@ elif st.session_state['user_info'] is None:
 # FASE 2: VALUTAZIONE
 # ==========================================
 else:
-    # ---------------------------------------------------------
-    # 1. LOGICA CAMBIO LINGUA "LIVE"
-    # Se l'utente ha cambiato lingua nel selettore, cerchiamo 
-    # la versione tradotta dello stesso testo che sta leggendo.
-    # ---------------------------------------------------------
     if st.session_state['current_text'] is not None:
         text_obj = st.session_state['current_text']
         target_lang = st.session_state['language_choice']
         
         # Se la lingua del testo attuale è diversa da quella scelta nel menu
         if text_obj.get('lang') != target_lang:
-            # Cerchiamo nel dataset un testo con lo STESSO 'prompt' ma nella NUOVA lingua
+            # Cerca nel dataset un testo con lo STESSO 'prompt' ma nella NUOVA lingua
             # next() prende il primo risultato trovato o restituisce None
             versione_tradotta = next(
                 (t for t in data_texts if t['prompt'] == text_obj['prompt'] and t['lang'] == target_lang), 
@@ -304,16 +324,14 @@ else:
             )
             
             if versione_tradotta:
-                # Sostituiamo il testo in memoria con quello tradotto
+                # Sostituisce testo
                 st.session_state['current_text'] = versione_tradotta
-                st.rerun() # Ricarichiamo la pagina per mostrare il nuovo testo
+                st.rerun() # Ricaricare pagina per mostrare il testo tradotto
             else:
                 # Caso raro: traduzione mancante
                 st.warning(f"⚠️ Traduzione in {target_lang} non disponibile per questo testo.")
-
-    # ---------------------------------------------------------
-    # 2. GESTIONE SCROLL (Codice precedente)
-    # ---------------------------------------------------------
+    
+    # Gestione dello scroll forzato
     if st.session_state.get('force_scroll', False):
         scroll_to_top()
         st.session_state['force_scroll'] = False
@@ -331,7 +349,6 @@ else:
         if st.session_state['current_text'] is None:
             # Filtro 1: Non ancora visti
             # Filtro 2: Corrispondono alla lingua scelta (campo 'lang' nel JSON)
-            # Nota: useremo .get('lang', 'en') per defaultare a inglese se manca il campo
             testi_disponibili = [
                 t for t in data_texts 
                 if t['id'] not in st.session_state['seen_ids'] 
@@ -378,42 +395,52 @@ else:
     if submit_eval:
         placeholder_valutazione.empty()
         
-        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        user = st.session_state['user_info']
-        
-        # Aggiungiamo user['language'] alla riga da salvare
-        row_to_append = [
-            timestamp,
-            user['session_id'],
-            user['native_language'],
-            user['gender'],
-            user['age'],
-            user['education'],
-            user['experience'],
-            texto['id'],
-            user.get('language', 'it'),
-            texto['author'],
-            texto['text'],
-            m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11
-        ]
-        
-        successo = False
-
-        try:
-            sheet = get_google_sheet()
-            sheet.append_row(row_to_append)
-            successo = True
-        except Exception as e:
-            if "200" in str(e):
-                successo = True
-            else:
-                st.error(f"{T['error_save'][curr_lang]}: {e}")
-
-        if successo:
-            st.session_state['seen_ids'].append(texto['id'])
-            st.success(T['success_msg'][curr_lang])
+        # Mostra uno spinner mentre prova a salvare
+        with st.spinner("Salvataggio in corso... / Saving data..."):
             
-            st.session_state['current_text'] = None
-            scroll_to_top()
-            time.sleep(1.5)
-            st.rerun()
+            timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            user = st.session_state['user_info']
+            
+            row_to_append = [
+                timestamp,
+                user['session_id'],
+                user['native_language'],
+                user['gender'],
+                user['age'],
+                user['education'],
+                user['experience'],
+                texto['id'],
+                user.get('language', 'it'),
+                texto['author'],
+                texto['text'],
+                m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11
+            ]
+            
+            # Prova a salvare con retry (fa al massimo 3 tentativi) - Utente vede rotellina
+            try:
+                sheet = get_google_sheet()
+                successo, errore = save_to_google_sheet_with_retry(sheet, row_to_append)
+            except Exception as e:
+                # se get_google_sheet fallisce
+                successo = False
+                errore = str(e)
+
+            if successo:
+                st.session_state['seen_ids'].append(texto['id'])
+                st.success(T['success_msg'][curr_lang])
+                st.session_state['current_text'] = None
+                scroll_to_top()
+                time.sleep(1.5)
+                st.rerun()
+            
+            else:
+                # Se l'errore contiene "200", è un falso positivo di gspread (successo mascherato)
+                if errore and "200" in errore:
+                    st.session_state['seen_ids'].append(texto['id'])
+                    st.success(T['success_msg'][curr_lang])
+                    st.session_state['current_text'] = None
+                    scroll_to_top()
+                    time.sleep(1.5)
+                    st.rerun()
+                else:
+                    st.error(f"{T['error_save'][curr_lang]} (Server Error: {errore}). Please try again.")

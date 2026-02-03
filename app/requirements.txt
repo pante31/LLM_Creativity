@@ -3,3 +3,4 @@ pandas
 gspread
 oauth2client
 pycountry
+streamlit>=1.31.0

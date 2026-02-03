@@ -371,7 +371,9 @@ else:
         label_seen = T['seen_label'][curr_lang]
         st.info(f"📄 **{label_id}: {texto['id']}** ({label_seen}: {len(st.session_state['seen_ids'])})")
         
-        st.markdown(f"### {texto['text']}")
+        # FIX: Escape dollar signs to prevent iOS crash on Math detection
+        safe_text = texto['text'].replace("$", "\$")
+        st.markdown(f"### {safe_text}")
         st.markdown("---")
         st.write(T['instructions'][curr_lang])
         

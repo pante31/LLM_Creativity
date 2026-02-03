@@ -320,8 +320,8 @@ metrics = ["surprise", "novelty", "value", "authenticity", "originality", "effec
 generation_params = {
     "max_new_tokens": 1024,
     "do_sample": True,
-    "temperature": 0.8,
-    "top_p": 0.9,
+    "temperature": 0,
+    "top_p": 1,
     "repetition_penalty": 1.2
 }
 

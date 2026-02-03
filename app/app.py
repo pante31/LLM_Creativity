@@ -372,7 +372,7 @@ else:
         st.info(f"📄 **{label_id}: {texto['id']}** ({label_seen}: {len(st.session_state['seen_ids'])})")
         
         # FIX: Escape dollar signs to prevent iOS crash on Math detection
-        safe_text = texto['text'].replace("$", "USD").replace("€", "EUR")
+        safe_text = texto['text'].replace("$", "\uff04")
         st.markdown(f"### {safe_text}")
         st.markdown("---")
         st.write(T['instructions'][curr_lang])

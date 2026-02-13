@@ -1,0 +1,16 @@
+pandas
+nltk
+spacy
+tqdm
+datasets
+transformers==4.46.0
+bitsandbytes==0.44.1
+accelerate==1.0.1
+scipy
+ipython
+diversity
+unidecode
+wheel
+sacremoses
+sentence-transformers
+click<8.1.0

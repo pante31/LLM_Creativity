@@ -1,35 +1,56 @@
+# Add this at the top of creativity.py
+try:
+    import bitsandbytes as bnb
+    print(f"SUCCESS: BitsAndBytes version {bnb.__version__} is installed and working.")
+except ImportError:
+    raise ImportError("CRITICAL ERROR: 'bitsandbytes' is not installed! Run 'pip install bitsandbytes' in your environment.")
+
 # Imports
 
 import pandas as pd
+import numpy as np
 import json
 import torch
 import nltk
 import spacy
+import math
+import gc
 import os
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 os.environ['NLTK_DATA'] = '/scratch.hpc/alessandro.tutone/nltk_data'
+os.environ['HF_HOME'] = '/scratch.hpc/alessandro.tutone/cache'
 nltk.data.path.clear()  # clear default home paths
 nltk.data.path.append('/scratch.hpc/alessandro.tutone/nltk_data')
+
+# Force garbage collection and clear CUDA cache to free up memory before loading models and running evaluations
+gc.collect()
+torch.cuda.empty_cache()
+# Delete any existing models if they are still in memory
+if 'model' in globals(): del model
+if 'sbert_model' in globals(): del sbert_model
 
 from tqdm import tqdm
 from datasets import load_dataset
 from transformers import AutoTokenizer, AutoModelForCausalLM
 from diversity import compression_ratio, extract_patterns
 from nltk.tokenize import word_tokenize
+from nltk.util import ngrams
 from nltk import pos_tag
 from transformers import pipeline, AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig#, infer_device
 from IPython.display import display, Markdown
 from creativity_index.DJ_search_exact import dj_search
+from sentence_transformers import SentenceTransformer
+from sklearn.metrics.pairwise import cosine_similarity
 
 nltk.download("punkt_tab", download_dir="/scratch.hpc/alessandro.tutone/nltk_data")
 nltk.download("averaged_perceptron_tagger_eng", download_dir="/scratch.hpc/alessandro.tutone/nltk_data")
+nltk.download("punkt", download_dir="/scratch.hpc/alessandro.tutone/nltk_data")
 
 HF_TOKEN = 'hf_SULLXJJXoqqHXo' +'LBqyjXTdOkwjybapbPGF'
 
+# Dataset preparation - All WritingPrompt!
 
-# Dataset preparation
-
-ds = load_dataset("euclaise/writingprompts")
+ds = load_dataset("euclaise/writingprompts", token=HF_TOKEN)
 df = pd.DataFrame(ds['train'])
 df_wp = df[df['prompt'].str.startswith('[ WP ] ')].copy()
 df_wp['prompt'] = df_wp['prompt'].str.slice(7)
@@ -40,7 +61,6 @@ os.makedirs(current_path + '/creativity_index/data/writingprompts/', exist_ok=Tr
 dataset_dict = [{"prompt": row.prompt, "text": row.story} for idx, row in dataset.iterrows()]
 with open(current_path + "/creativity_index/data/writingprompts/dataset.json", "w") as final:
     json.dump(dataset_dict, final, indent=2, default=lambda x: list(x) if isinstance(x, tuple) else str(x))
-
 
 # Creatiivty Index
 
@@ -197,6 +217,111 @@ def template_per_token(dataset_path, subset=1, len_template=4, top_n_templates=1
   return tpts
 
 
+# Expectation Adjusted Distinct (EAD)
+
+def compute_EAD(dataset_path, n=1, subset=1):
+    # n (int): The n-gram size (1 for tokens/unigrams, 2 for bigrams, etc.)
+
+    with open(dataset_path, 'r') as f:
+      dataset = json.load(f)
+
+    if subset <= 0:
+      return []
+
+    subset = min(subset, len(dataset))
+    eads = []
+
+    all_texts = [dataset[i]['text'] for i in range(len(dataset))]
+    
+    # 1. Determine Vocabulary size
+    global_vocab = set() # determine V dynamically based on your specific dataset 
+    
+    for text in all_texts:
+        tokens = word_tokenize(text.lower())
+        global_vocab.update(tokens)
+    
+    V = len(global_vocab)
+
+    subset = min(subset, len(dataset))
+
+    for text in tqdm(all_texts[0:subset], desc='\tEAD'):   
+        tokens = word_tokenize(text.lower())
+        if len(tokens) < n:
+            eads.append(0.0) 
+            continue # Skip to next text
+            
+        # Get n-grams (or just tokens if n=1)
+        if n == 1:
+            items = tokens
+        else:
+            items = list(ngrams(tokens, n))
+            
+        C = len(items)          # Total number of tokens/n-grams
+        N = len(set(items))     # Number of DISTINCT tokens/n-grams
+
+        if C <= 0 or V <= 0:
+            eads.append(0.0)
+            continue
+        
+        # 2. Compute expectation E[N] = V * (1 - ((V-1)/V)^C)
+        expected_N = V * (1 - math.pow((V - 1) / V, C))
+        
+        if expected_N == 0:
+            eads.append(0.0)
+        else:
+            # 3. Compute EAD score for specific text
+            ead_score = N / expected_N
+            eads.append(ead_score)
+
+    return eads
+
+# SBERT Diversity
+
+def compute_SBERTDiversity(dataset_path, model_name='all-MiniLM-L6-v2', subset=200):    
+    scores = []
+    
+    # 1. Load Dataset
+    with open(dataset_path, 'r') as f:
+        dataset = json.load(f)
+    
+    if subset <= 0:
+          return []
+        
+    all_texts = [d['text'] for d in dataset]
+    sbert_model = SentenceTransformer(model_name)
+    subset = min(subset, len(dataset))
+    
+    for text in tqdm(all_texts[0:subset], desc='\tSBERT Diversity'):
+        # 1. Split text into sentences
+        # Use appropriate tokenizer for the language if possible, but default is usually fine
+        sentences = nltk.sent_tokenize(text)
+        
+        # Edge case: Need at least 2 sentences to compare
+        if len(sentences) < 2:
+            scores.append(0.0)
+            continue
+            
+        # 2. Encode sentences (Batch encoding is faster)
+        embeddings = sbert_model.encode(sentences)
+        
+        # 3. Calculate Cosine Similarity Matrix
+        sim_matrix = cosine_similarity(embeddings)
+        
+        # 4. Extract unique pairs (Upper Triangle)
+        upper_tri_indices = np.triu_indices_from(sim_matrix, k=1)
+        unique_similarities = sim_matrix[upper_tri_indices]
+        
+        # 5. Compute Diversity
+        if len(unique_similarities) == 0:
+            scores.append(0.0)
+        else:
+            mu_sim = np.mean(unique_similarities)
+            diversity_score = 1 - mu_sim
+            scores.append(float(diversity_score))
+    
+    return scores
+
+
 # LLM-as-a-judge
 
 def prepare_prompts(texts, prompt_template, tokenizer, metrics=[], generation_prompt = True):
@@ -235,8 +360,8 @@ def generate_responses_batched(model, prompts: list, tokenizer, batch_size=8, **
         with torch.inference_mode():
             outputs = model.generate(**inputs, **gen_param)
 
-        input_lenght = inputs["input_ids"].shape[1]
-        responses_tokens = outputs[:, input_lenght:]
+        input_length = inputs["input_ids"].shape[1]
+        responses_tokens = outputs[:, input_length:]
         batch_responses = tokenizer.batch_decode(responses_tokens, skip_special_tokens=True)
 
         for response in batch_responses:
@@ -284,6 +409,10 @@ def creativity_evaluation(model, tokenizer, chat_prompt, dataset_path, output_pa
   template_rates = template_rate(dataset_path, subset=subset, len_template=4, top_n_templates=100)
   print('Computing Template-per-Token...')
   tpts = template_per_token(dataset_path, subset=subset, len_template=4, top_n_templates=100)
+  print('Computing EAD...')
+  eads = compute_EAD(dataset_path, n=1, subset=subset)
+  print('Computing SBERT Diversity...')
+  sbert_diversity = compute_SBERTDiversity(dataset_path, model_name='all-MiniLM-L6-v2', subset=subset)
   print('Computing LLM-as-a-judge...')
   responses = llm_as_a_judge(model, tokenizer, chat_prompt, dataset_path, metrics, subset=subset, batch_size=batch_size, gen_params=generation_params)
   print('DONE!')
@@ -294,6 +423,8 @@ def creativity_evaluation(model, tokenizer, chat_prompt, dataset_path, output_pa
       'cr_pos': cr_poses,
       'template_rate': template_rates,
       'template_per_token': tpts,
+      'ead': eads,
+      'sbert_diversity': sbert_diversity,
       'llm_as_a_judge': responses
   }
 
@@ -308,39 +439,53 @@ def creativity_evaluation(model, tokenizer, chat_prompt, dataset_path, output_pa
 
 # RUNNING params
 
-dataset_path = current_path + '/creativity_index/data/writingprompts/dataset.json'
+#dataset_path = current_path + '/creativity_index/data/writingprompts/dataset.json' # full dataset
+dataset_path = current_path + '/dataset_full_200.json' # 100+100 dataset
 output_path = current_path + '/results/'
 
 # Parameters
-subset = 10
+subset = 200
 batch_size = 1
 model_name = "meta-llama/Llama-3.3-70B-Instruct"
+#model_name = "meta-llama/Meta-Llama-3-8B-Instruct"
+#model_name = "Qwen/Qwen3-32B"
+
 metrics = ["surprise", "novelty", "value", "authenticity", "originality", "effectiveness", "fluency", "flexibility", "elaboration", "usefulness", "creativity"]
 
 generation_params = {
     "max_new_tokens": 1024,
     "do_sample": True,
-    "temperature": 0,
-    "top_p": 1,
-    "repetition_penalty": 1.2
+    "temperature": 0.2,
+    "top_p": 0.95,
+    "repetition_penalty": 1.1
 }
 
 # Model and Tokenizer
 tokenizer = AutoTokenizer.from_pretrained(model_name, token=HF_TOKEN)
 
+if tokenizer.pad_token is None:
+    tokenizer.pad_token = tokenizer.eos_token
+tokenizer.padding_side = "left" # Important for generation (LLM-as-a-judge)
+
+os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
 bnb_config = BitsAndBytesConfig(
     load_in_4bit=True,
-    #bnb_4bit_use_double_quant=True, # this further reduces the precision of weights (double quantization)
+    bnb_4bit_use_double_quant=True, # this further reduces the precision of weights (double quantization)
     bnb_4bit_quant_type="nf4",
     bnb_4bit_compute_dtype=torch.bfloat16,
+    llm_int8_enable_fp32_cpu_offload=True,
 )
+
+# Clear Cache
+torch.cuda.empty_cache()
 
 model = AutoModelForCausalLM.from_pretrained(
     model_name,
     return_dict=True,
     quantization_config=bnb_config,
     token=HF_TOKEN,
-    device_map='auto'
+    device_map='auto',
+    max_memory={0: "44GiB", "cpu": "80GiB"}, # Prevents GPU overflow
 )
 
 chat_prompt_metric = [

@@ -209,7 +209,7 @@ def save_to_google_sheet_with_retry(sheet, row, max_retries=3):
 @st.cache_data
 def load_texts():
     base_dir = os.path.dirname(os.path.abspath(__file__))
-    json_path = os.path.join(base_dir, "dataset_full_200.json")
+    json_path = os.path.join(base_dir, "dataset_to_read.json") # dataset_full_200
     with open(json_path, 'r') as f:
         data = json.load(f)
     return data

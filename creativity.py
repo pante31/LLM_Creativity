@@ -1,10 +1,3 @@
-# Add this at the top of creativity.py
-try:
-    import bitsandbytes as bnb
-    print(f"SUCCESS: BitsAndBytes version {bnb.__version__} is installed and working.")
-except ImportError:
-    raise ImportError("CRITICAL ERROR: 'bitsandbytes' is not installed! Run 'pip install bitsandbytes' in your environment.")
-
 # Imports
 
 import pandas as pd
@@ -46,7 +39,8 @@ nltk.download("punkt_tab", download_dir="/scratch.hpc/alessandro.tutone/nltk_dat
 nltk.download("averaged_perceptron_tagger_eng", download_dir="/scratch.hpc/alessandro.tutone/nltk_data")
 nltk.download("punkt", download_dir="/scratch.hpc/alessandro.tutone/nltk_data")
 
-HF_TOKEN = 'hf_SULLXJJXoqqHXo' +'LBqyjXTdOkwjybapbPGF'
+HF_TOKEN = 'hf_'
+
 
 # Dataset preparation - All WritingPrompt!
 
@@ -61,6 +55,7 @@ os.makedirs(current_path + '/creativity_index/data/writingprompts/', exist_ok=Tr
 dataset_dict = [{"prompt": row.prompt, "text": row.story} for idx, row in dataset.iterrows()]
 with open(current_path + "/creativity_index/data/writingprompts/dataset.json", "w") as final:
     json.dump(dataset_dict, final, indent=2, default=lambda x: list(x) if isinstance(x, tuple) else str(x))
+
 
 # Creatiivty Index
 
@@ -93,11 +88,17 @@ def compute_creativity_index(data_path, output_dir, subset=1, lm_tokenizer=False
 
 # Perplexity 
 
-def perplexity(dataset_path, subset=1, model=False, tokenizer=False, model_name='gpt2'):
+def perplexity(dataset_path, subset=1, model=False, tokenizer=False, model_name='meta-llama/Meta-Llama-3-8B'):
   if not model or not tokenizer:
     tokenizer = AutoTokenizer.from_pretrained(model_name, token=HF_TOKEN)
     tokenizer.pad_token = tokenizer.eos_token
-    model = AutoModelForCausalLM.from_pretrained(model_name, token=HF_TOKEN, device_map='auto')
+    bnb_config_8b = BitsAndBytesConfig(
+            load_in_4bit=True,
+            bnb_4bit_use_double_quant=True,
+            bnb_4bit_quant_type="nf4",
+            bnb_4bit_compute_dtype=torch.float16
+        )
+    model = AutoModelForCausalLM.from_pretrained(model_name, token=HF_TOKEN, quantization_config=bnb_config_8b, device_map='auto')
   device = model.device
 
   with open(dataset_path, 'r') as f:
@@ -221,7 +222,6 @@ def template_per_token(dataset_path, subset=1, len_template=4, top_n_templates=1
 
 def compute_EAD(dataset_path, n=1, subset=1):
     # n (int): The n-gram size (1 for tokens/unigrams, 2 for bigrams, etc.)
-
     with open(dataset_path, 'r') as f:
       dataset = json.load(f)
 
@@ -233,7 +233,7 @@ def compute_EAD(dataset_path, n=1, subset=1):
 
     all_texts = [dataset[i]['text'] for i in range(len(dataset))]
     
-    # 1. Determine Vocabulary size
+    # Determine Vocabulary size
     global_vocab = set() # determine V dynamically based on your specific dataset 
     
     for text in all_texts:
@@ -263,24 +263,24 @@ def compute_EAD(dataset_path, n=1, subset=1):
             eads.append(0.0)
             continue
         
-        # 2. Compute expectation E[N] = V * (1 - ((V-1)/V)^C)
+        # Compute expectation E[N] = V * (1 - ((V-1)/V)^C)
         expected_N = V * (1 - math.pow((V - 1) / V, C))
         
         if expected_N == 0:
             eads.append(0.0)
         else:
-            # 3. Compute EAD score for specific text
+            # Compute EAD score for specific text
             ead_score = N / expected_N
             eads.append(ead_score)
 
     return eads
+
 
 # SBERT Diversity
 
 def compute_SBERTDiversity(dataset_path, model_name='all-MiniLM-L6-v2', subset=200):    
     scores = []
     
-    # 1. Load Dataset
     with open(dataset_path, 'r') as f:
         dataset = json.load(f)
     
@@ -293,15 +293,13 @@ def compute_SBERTDiversity(dataset_path, model_name='all-MiniLM-L6-v2', subset=2
     
     for text in tqdm(all_texts[0:subset], desc='\tSBERT Diversity'):
         # 1. Split text into sentences
-        # Use appropriate tokenizer for the language if possible, but default is usually fine
         sentences = nltk.sent_tokenize(text)
-        
-        # Edge case: Need at least 2 sentences to compare
+    
         if len(sentences) < 2:
             scores.append(0.0)
             continue
             
-        # 2. Encode sentences (Batch encoding is faster)
+        # 2. Encode sentences into embeddings
         embeddings = sbert_model.encode(sentences)
         
         # 3. Calculate Cosine Similarity Matrix
@@ -330,13 +328,15 @@ def prepare_prompts(texts, prompt_template, tokenizer, metrics=[], generation_pr
 
   for text in texts:
     for metric in metrics:
-      text_formatted = chat_template.format(text=text, metric=metric)
+      current_definition = metric_definitions.get(metric, "Definition not found.")
+      text_formatted = chat_template.format(text=text, metric=metric, metric_name=metric, definition=current_definition)
       texts_formatted.append(text_formatted)
     if not metrics:
       text_formatted = chat_template.format(text=text)
       texts_formatted.append(text_formatted)
 
   return texts_formatted
+
 
 def fix_json_brackets(s):
     s = s.strip()
@@ -348,6 +348,7 @@ def fix_json_brackets(s):
         close_braces -= 1
     
     return s
+
 
 def generate_responses_batched(model, prompts: list, tokenizer, batch_size=8, **gen_param):
     responses = []
@@ -367,6 +368,7 @@ def generate_responses_batched(model, prompts: list, tokenizer, batch_size=8, **
         for response in batch_responses:
           try:
             response = fix_json_brackets(response)
+            response = response.replace("\\'", "'")
             response_dictionary = json.loads(response)
             responses.append(response_dictionary)
           except json.JSONDecodeError:
@@ -376,6 +378,7 @@ def generate_responses_batched(model, prompts: list, tokenizer, batch_size=8, **
             print("Other problems occurred!")
 
     return responses
+
 
 def llm_as_a_judge(model, tokenizer, chat_prompt, dataset_path, metrics=[], subset=1, batch_size=8, gen_params={}):
   with open(dataset_path, 'r') as f:
@@ -401,8 +404,6 @@ def creativity_evaluation(model, tokenizer, chat_prompt, dataset_path, output_pa
 
   print('Computing Creativity Index...')
   creativity_index_values = compute_creativity_index(dataset_path, output_dir = current_path + '/creativity_index/outputs/writingprompts/L/', subset=subset, lm_tokenizer=False)
-  print('Computing Perplexity...')
-  perplexities = perplexity(dataset_path, subset=subset, model=model, tokenizer=tokenizer)
   print('Computing CR-POS...')
   cr_poses = cr_pos(dataset_path, subset=subset)
   print('Computing Template Rate...')
@@ -415,6 +416,24 @@ def creativity_evaluation(model, tokenizer, chat_prompt, dataset_path, output_pa
   sbert_diversity = compute_SBERTDiversity(dataset_path, model_name='all-MiniLM-L6-v2', subset=subset)
   print('Computing LLM-as-a-judge...')
   responses = llm_as_a_judge(model, tokenizer, chat_prompt, dataset_path, metrics, subset=subset, batch_size=batch_size, gen_params=generation_params)
+  
+  # Remove model from memory before computing perplexity to free up GPU resources
+  if 'model' in locals(): 
+      del model
+  if 'tokenizer' in locals(): 
+      del tokenizer
+  if 'model' in globals(): 
+      del globals()['model']
+  if 'tokenizer' in globals(): 
+      del globals()['tokenizer']
+  gc.collect()
+  gc.collect() # Calling it twice helps clear deeply nested objects
+  torch.cuda.empty_cache()
+  torch.cuda.reset_peak_memory_stats()
+
+  
+  print('Computing Perplexity...')
+  perplexities = perplexity(dataset_path, subset=subset)
   print('DONE!')
 
   creativity_metrics = {
@@ -444,13 +463,27 @@ dataset_path = current_path + '/dataset_full_200.json' # 100+100 dataset
 output_path = current_path + '/results/'
 
 # Parameters
-subset = 200
+subset = 400
 batch_size = 1
 model_name = "meta-llama/Llama-3.3-70B-Instruct"
 #model_name = "meta-llama/Meta-Llama-3-8B-Instruct"
 #model_name = "Qwen/Qwen3-32B"
 
-metrics = ["surprise", "novelty", "value", "authenticity", "originality", "effectiveness", "fluency", "flexibility", "elaboration", "usefulness", "creativity"]
+metrics = ["authenticity", "effectiveness", "elaboration", "fluency", "flexibility", "novelty", "originality", "surprise", "usefulness", "value", "creativity"]
+
+metric_definitions = {
+    "authenticity": "The perception of a genuine and personal voice. Does the text seem written with its own heartfelt style, or does it appear mechanical, artificial, or copied?",
+    "effectiveness": "The ability to achieve the narrative goal. Does the story entertain and satisfy the prompt in a complete and convincing manner?",
+    "elaboration": "The richness of details and depth of development. Does the text expand the main idea with vivid descriptions and complexity, rather than remaining superficial?",
+    "fluency": "The linguistic smoothness and ease of idea generation. Does the text read naturally without grammatical hiccups, with ideas flowing logically from one to another?",
+    "flexibility": "The variety of perspectives or themes. Does the text manage to connect different concepts, change viewpoints, or adapt to narrative constraints agilely?",
+    "novelty": "The degree of conceptual innovation. Is the core idea fresh and new, or is it a rehash of well-known and overused concepts?",
+    "originality": "The statistical rarity of the approach. Compared to other texts on the same topic, does this approach avoid clichés and commonplaces?",
+    "surprise": "The ability to astonish the reader. Does the content take an unexpected turn, introduce a plot twist, or break common expectations regarding the topic?",
+    "usefulness": "The relevance and applicability to the context. Is the text consistent with the initial request and does it function as a valid response to the prompt?",
+    "value": "The intrinsic merit of the text. Is the reading experience enriching, interesting, or emotionally engaging? Does it possess a perceivable literary quality?",
+    "creativity": "A holistic judgment on ingenuity and imagination. Has the author combined ideas uniquely to create a 'wow factor' that distinguishes an inspired text from a mundane one?"
+}
 
 generation_params = {
     "max_new_tokens": 1024,
@@ -465,12 +498,12 @@ tokenizer = AutoTokenizer.from_pretrained(model_name, token=HF_TOKEN)
 
 if tokenizer.pad_token is None:
     tokenizer.pad_token = tokenizer.eos_token
-tokenizer.padding_side = "left" # Important for generation (LLM-as-a-judge)
+tokenizer.padding_side = "left"
 
 os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
 bnb_config = BitsAndBytesConfig(
     load_in_4bit=True,
-    bnb_4bit_use_double_quant=True, # this further reduces the precision of weights (double quantization)
+    #bnb_4bit_use_double_quant=True, # this further reduces the precision of weights
     bnb_4bit_quant_type="nf4",
     bnb_4bit_compute_dtype=torch.bfloat16,
     llm_int8_enable_fp32_cpu_offload=True,
@@ -502,6 +535,9 @@ chat_prompt_metric = [
         'role': 'user',
         'content': """Given the following text, you need to evaluate it for the specified metric: {metric}.
         
+        ### Metric Definition
+        **{metric_name}**: {definition}
+
         ### Task
         Taking into account the definition of the specified metric, produce:
             - score: integer 1–5 (1 = lowest, 5 = highest)
@@ -518,6 +554,8 @@ chat_prompt_metric = [
           • Do NOT include backticks, markdown, explanations, or anything outside the JSON.
           • If unsure about JSON syntax, default to minimal valid JSON with null excerpt.
           • Before answering, double check the brackets and the correctenss of the JSON
+          • CRITICAL JSON RULE: All JSON keys and string values MUST be enclosed in double quotes (e.g., "justification": "your text here").
+          • CRITICAL TEXT RULE: Inside your justification or excerpt, do NOT use double quotes. If you need to quote a character, use single quotes (e.g., "excerpt": "He said 'hello'").
 
         Output structure:
             {{

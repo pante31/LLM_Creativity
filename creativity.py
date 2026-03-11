@@ -39,7 +39,7 @@ nltk.download("punkt_tab", download_dir="/scratch.hpc/alessandro.tutone/nltk_dat
 nltk.download("averaged_perceptron_tagger_eng", download_dir="/scratch.hpc/alessandro.tutone/nltk_data")
 nltk.download("punkt", download_dir="/scratch.hpc/alessandro.tutone/nltk_data")
 
-HF_TOKEN = 'hf_'
+HF_TOKEN = 'hf_' # INSERT A VALID HF TOKEN HERE
 
 
 # Dataset preparation - All WritingPrompt!

@@ -262,7 +262,7 @@ if not st.session_state['consent_given']:
     with col_c1:
         if st.button(T['agree_btn'][curr_lang], use_container_width=True, type="primary"):
             st.session_state['consent_given'] = True
-            st.session_state['force_scroll'] = True # Per scrollare in alto nella prossima pagina
+            st.session_state['force_scroll'] = True
             st.rerun()
             
     with col_c2:
@@ -300,7 +300,7 @@ elif st.session_state['user_info'] is None:
                 "gender": T['gender_opts']['en'][T['gender_opts'][curr_lang].index(gender)],
                 "education": T['edu_opts']['en'][T['edu_opts'][curr_lang].index(education)],
                 "experience": T['exp_opts']['en'][T['exp_opts'][curr_lang].index(experience)],
-                "txt_language": curr_lang, # Salviamo anche la lingua scelta
+                "txt_language": curr_lang,
                 "session_id": str(datetime.now().timestamp())
             }
             st.session_state['force_scroll'] = True

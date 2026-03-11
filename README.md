@@ -40,8 +40,7 @@ LLM_Creativity/
 ├── notebooks/              # Jupyter notebooks for PCA, Correlation, Statistical Analysis, and other tests
 ├── results/                # Output data, generated evaluations, and correlation matrices
 ├── .gitignore              # Git ignore configurations
-├── README.md               # Project documentation
-└── requirements.txt        # Python dependencies
+└── README.md               # Project documentation
 ```
 
 ## ⚙️ Installation & Usage
@@ -52,6 +51,7 @@ To replicate the correlation matrices or run the automated metrics on your own t
    ```bash
    git clone [https://github.com/pante31/LLM_Creativity.git](https://github.com/pante31/LLM_Creativity.git)
    cd LLM_Creativity
+   cd metrics
    ```
 
 2. Install the required dependencies:
@@ -59,7 +59,10 @@ To replicate the correlation matrices or run the automated metrics on your own t
     pip install -r requirements.txt
     ```
 
-3. Run the primary analysis notebook located in ```notebooks/correlation_analysis.ipynb```.
+3. Run the script to compute all automated metrics:
+    ```bash
+    python3 creativity.py
+    ```
 
 ## 📄 Citation
 

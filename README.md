@@ -48,7 +48,7 @@ To replicate the correlation matrices or run the automated metrics on your own t
 
 1. Clone the repository:
    ```bash
-   git clone [https://github.com/pante31/LLM_Creativity.git](https://github.com/pante31/LLM_Creativity.git)
+   git clone https://github.com/pante31/LLM_Creativity.git
    cd LLM_Creativity
    cd metrics
    ```

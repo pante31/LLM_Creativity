@@ -31,16 +31,15 @@ Using the *WritingPrompts* dataset, this project conducts a multi-dimensional co
 ## 📂 Repository Structure
 
 ```text
-LLM_Creativity/
-│
-├── app/                    # Source code for the human evaluation web interface
-├── dataset/                # Raw and processed datasets (WritingPrompts subset)
-├── imgs/                   # Images, plots, and figures generated during analysis
-├── metrics/                # Python scripts for automated metric computation (Perplexity, POS, etc.)
-├── notebooks/              # Jupyter notebooks for PCA, Correlation, Statistical Analysis, and other tests
-├── results/                # Output data, generated evaluations, and correlation matrices
-├── .gitignore              # Git ignore configurations
-└── README.md               # Project documentation
+📂 LLM_Creativity
+├── 📁 app          # Web interface for human evaluation
+├── 📁 dataset      # Raw & processed WritingPrompts subset
+├── 📁 imgs         # Figures, plots, and analysis visuals
+├── 📁 metrics      # Scripts for automated metrics (Perplexity, POS)
+├── 📁 notebooks    # PCA, correlation, and statistical analysis
+├── 📁 results      # Final outputs and correlation matrices
+├── 📄 .gitignore   # Git configurations
+└── 📄 README.md    # Project documentation
 ```
 
 ## ⚙️ Installation & Usage
@@ -68,7 +67,8 @@ To replicate the correlation matrices or run the automated metrics on your own t
 
 If you use this code, dataset, or research in your own work, please cite the thesis:
 
-  ```@mastersthesis{tutone2026llmcreativity,
+  ```
+   @mastersthesis{tutone2026llmcreativity,
     author       = {Alessandro Tutone},
     title        = {A Critical Analysis of LLM Creativity Evaluation},
     school       = {Alma Mater Studiorum - University of Bologna},

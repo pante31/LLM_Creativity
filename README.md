@@ -1,54 +1,53 @@
-# A Critical Analysis of LLM Creativity Evaluation 🧠✍️
-
-**Author:** Alessandro Tutone  
-**Institution:** Alma Mater Studiorum - University of Bologna (Master's Degree in Artificial Intelligence)  
-**Thesis Supervisor:** Prof. Mirco Musolesi  
-**Thesis Tutor:** Giorgio Franceschelli  
+# Demystifying Automatic Creativity Evaluation in Large Language Models
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 
+**Official code and dataset repository for the research paper:** *Demystifying automatic creativity evaluation in large language models*
+**Authors:** Alessandro Tutone, Giorgio Franceschelli, Mirco Musolesi
+
+---
+
 ## 📖 Overview
 
-Large Language Models (LLMs) have achieved remarkable proficiency in natural language generation, increasingly challenging human benchmarks in abstract domains such as creative writing. However, accurately measuring creativity and understanding how these models relate to such a complex construct remains a profound academic challenge. 
+As Large Language Models (LLMs) achieve remarkable proficiency in natural language generation, accurately measuring their capacity for creativity remains a profound academic challenge. This repository contains the official code, datasets, and experimental framework designed to investigate whether current automatic evaluation schemes possess the capacity to correctly evaluate human and artificial creativity.
 
-This repository contains the code, data analysis, and experimental framework for my Master's thesis, which investigates the fundamental relationship between LLMs and creativity. It asks not only whether AI can successfully simulate creative works, but also **whether LLMs possess the capacity to objectively evaluate them.**
-
-Using the *WritingPrompts* dataset, this project conducts a multi-dimensional comparative analysis of human-authored and LLM-generated narratives across phrase-level lexical choices, structural templates, and 11 subjective dimensions of creativity.
+Using a curated subset of the *WritingPrompts* dataset (comprising both human-authored and LLM-generated short stories), this project conducts a multi-dimensional comparative analysis. It contrasts objective statistical metrics and the "LLM-as-a-Judge" paradigm against a robust baseline of human subjective evaluations across 11 distinct dimensions of creativity.
 
 ## 🚀 Key Findings
 
-1. **The LLM-as-a-Judge Bias & The Echo Chamber:** The study exposes a severe systemic bias within the LLM-as-a-judge paradigm. The AI evaluator consistently favored its own probabilistic, low-variance stylistic signatures, entirely failing to recognize the narrative unpredictability and organic prosody valued by human readers. Unsupervised reliance on this assessment risks establishing an "algorithmic echo chamber" and contributing to model collapse.
-2. **The Quality-Diversity Pareto Front:** Principal Component Analysis (PCA) revealed a stark topological divide. AI-generated texts are rigidly constrained along a mathematical quality-diversity Pareto frontier. In contrast, human narratives exhibit high variance, effortlessly breaking these algorithmic boundaries.
-3. **The Failure of Objective Metrics:** Correlation analyses demonstrated that current mathematical evaluation frameworks are fundamentally inadequate. Purely structural metrics, such as the *Creativity Index*, exhibited near-zero alignment with human perception of aesthetic quality, surprise, and emotional resonance.
+* **Inadequacy of Automated Metrics:** Traditional mathematical text evaluation frameworks (including the Creativity Index, Perplexity, and syntactic template scores) exhibit near-zero alignment with human perception of aesthetic quality, surprise, and emotional resonance.
+* **Severe Algorithmic Bias:** The LLM-as-a-Judge paradigm is heavily driven by a systemic self-preference bias, consistently favoring the probabilistic, low-variance stylistic signatures of AI-generated texts over human unpredictability.
+* **Semantic Misalignment:** Correlation analyses reveal that human evaluators strongly associate creativity with novelty, originality, and surprise. In contrast, LLMs primarily correlate creativity with surface-level structural elaboration.
+* **The Risk of an Echo Chamber:** Unsupervised reliance on automated evaluation for creative tasks risks establishing an algorithmic echo chamber, contributing to model collapse and standardizing a sterile definition of creativity.
 
 ## 🛠️ Methodology & Experimental Design
 
-* **Dataset:** Subset of the [*WritingPrompts*](https://arxiv.org/abs/1805.04833) collection.
-* **Automated Metrics:** Perplexity, syntactic template analysis (TPT, EAD, CR-POS), and the Creativity Index.
-* **Subjective Evaluation:** Human-in-the-loop evaluation vs. LLM-as-a-judge framework across 11 cognitive and aesthetic dimensions (including Novelty, Originality, Value, Surprise, and Effectiveness, inspired by Boden and Runco).
+* **Dataset:** A balanced corpus of 200 short stories (100 human-written sourced from the *WritingPrompts* collection, and 100 AI-generated using state-of-the-art models including GPT-5.2, DeepSeek-V3.2, Mistral Large 3, Claude Sonnet 4.5, and Gemini 3 Pro).
+* **Automated Metrics:** Perplexity, syntactic template analysis (TR, TPT, CR-POS), Expectation-Adjusted Distinct n-grams (EAD), Semantic Diversity (SBERT-Div), and the Creativity Index.
+* **Subjective Evaluation:** A dual-track blind evaluation protocol comparing human-in-the-loop judgments against an isolated LLM-as-a-Judge framework across 11 cognitive and aesthetic dimensions (e.g., Authenticity, Effectiveness, Elaboration, Novelty, Surprise).
 
 ## 📂 Repository Structure
 
 ```text
 📂 LLM_Creativity
-├── 📁 app          # Web interface for human evaluation
-├── 📁 dataset      # Raw & processed WritingPrompts subset
-├── 📁 imgs         # Figures, plots, and analysis visuals
-├── 📁 metrics      # Scripts for automated metrics (Perplexity, POS)
-├── 📁 notebooks    # PCA, correlation, and statistical analysis
-├── 📁 results      # Final outputs and correlation matrices
+├── 📁 app          # Web interface code used for the human evaluation campaign
+├── 📁 dataset      # Raw and processed WritingPrompts subset (Human & AI stories)
+├── 📁 imgs         # High-resolution figures and correlation heatmaps from the paper
+├── 📁 metrics      # Core logic for Automated Metrics & LLM-as-a-Judge inference
+├── 📁 notebooks    # Jupyter notebooks for statistical analysis and visualization
+├── 📁 results      # Final outputs, p-values, and correlation matrices
 ├── 📄 .gitignore   # Git configurations
 └── 📄 README.md    # Project documentation
 ```
 
 ## ⚙️ Installation & Usage
 
-To replicate the correlation matrices or run the automated metrics on your own text data:
+To ensure full reproducibility of the paper's findings, or to apply the evaluation pipeline to your own text datasets:
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/pante31/LLM_Creativity.git
+   git clone [https://github.com/pante31/LLM_Creativity.git](https://github.com/pante31/LLM_Creativity.git)
    cd LLM_Creativity
    cd metrics
    ```
@@ -62,24 +61,25 @@ To replicate the correlation matrices or run the automated metrics on your own t
     ```bash
     python3 creativity.py
     ```
+**💡 Note on Evaluation Logic:** The ``creativity.py`` script serves as the core engine of this repository. It contains all the necessary logic, algorithms, and prompt templates required for text evaluation. This includes the implementation of the objective automated metrics (e.g., Perplexity, POS tagging extraction) as well as the exact, isolated prompt engineering instructions used to query the LLM-as-a-Judge.
+
+## 📊 Data Availability
+
+All generated and collected data used in this study, including the anonymized human survey responses and the LLM inference outputs, are publicly available within the ``dataset`` and ``results`` directories of this repository. The original prompts and human-written short stories are sourced from the public *WritingPrompts* dataset, available via HuggingFace.
 
 ## 📄 Citation
 
-If you use this code, dataset, or research in your own work, please cite the thesis:
+If you utilize this code, dataset, or experimental framework in your own research, please cite our paper:
 
   ```
-   @mastersthesis{tutone2026llmcreativity,
-    author       = {Alessandro Tutone},
-    title        = {A Critical Analysis of LLM Creativity Evaluation},
-    school       = {Alma Mater Studiorum - University of Bologna},
-    year         = {2026},
-    type         = {Master's Thesis},
-    note         = {Department of Computer Science and Engineering (DISI)}
-  }
+   @article{tutone2026demystifying,
+      title        = {Demystifying automatic creativity evaluation in large language models},
+      author       = {Tutone, Alessandro and Franceschelli, Giorgio and Musolesi, Mirco},
+      journal      = {Nature Machine Intelligence},
+      note         = {Under Review},
+      year         = {2026}
+   }
   ```
 
-## 🤝 Acknowledgments
-
-Special thanks to my family for their unwavering support, to my supervisor Prof. Mirco Musolesi, and to my tutor Giorgio Franceschelli for their invaluable guidance throughout this research.
 
 *"Rest at the End, Not in the Middle"*

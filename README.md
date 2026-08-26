@@ -1,4 +1,4 @@
-# Demystifying Automatic Creativity Evaluation in Large Language Models
+# The Limits of Automatic Evaluation of Creativity in Large Language Models
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
@@ -69,17 +69,18 @@ All generated and collected data used in this study, including the anonymized hu
 
 ## 📄 Citation
 
-If you utilize this code, dataset, or experimental framework in your own research, please cite our paper:
+If you utilize this code, dataset, or experimental framework in your own research, please cite our preprint:
 
-  ```
-   @article{tutone2026demystifying,
-      title        = {Demystifying automatic creativity evaluation in large language models},
-      author       = {Tutone, Alessandro and Franceschelli, Giorgio and Musolesi, Mirco},
-      journal      = {Nature Machine Intelligence},
-      note         = {Under Review},
-      year         = {2026}
-   }
-  ```
+```bibtex
+@misc{tutone2026demystifying,
+      title={The Limits of Automatic Evaluation of Creativity in Large Language Models}, 
+      author={Alessandro Tutone and Giorgio Franceschelli and Mirco Musolesi},
+      year={2026},
+      eprint={2608.23705},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL},
+      url={[https://arxiv.org/abs/2608.23705](https://arxiv.org/abs/2608.23705)}
+}
 
 
 *"Rest at the End, Not in the Middle"*
